@@ -1,0 +1,27 @@
+@import "./base.css";
+
+$color-1: #461220;
+$color-2: #8C2F39;
+$color-3: #B23A48;
+$color-4: #FCB9B2;
+$color-5: #FED0BB;
+
+body {
+  color: $color-1;
+  background-color: $color-5;
+  font-family: "Work Sans", sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: $color-5;
+    background-color: $color-1;
+  }
+}
+
+* {
+  transition: all 150ms ease-in-out;
+}
