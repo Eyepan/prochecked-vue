@@ -1,25 +1,26 @@
 @import "./base.css";
 
+* {
+  transition: all 150ms ease-in-out;
+}
 
 :root {
+  --color-1: #252422ff;
+  --color-2: #403d39ff;
+  --color-3: #eb5e28ff;
+  --color-4: #ccc5b9ff;
+  --color-5: #fffcf2ff;
 
-  --light-green: #b9ffb7ff;
-  --celadon: #abedc6ff;
-  --tiffany-blue: #98d9c2ff;
-  --carrot-orange: #f19a3eff;
-  --van-dyke: #403233ff;
+  --button-bg-color-1: #478978ff;
+  --button-bg-color-2: #EF6351ff;
 
-
-  --color-1: #071330;
-  --color-2: #0C4160;
-  --color-3: #738FA7;
-  --color-4: #B1D4E0;
-  --color-5: #C3CEDA;
 }
+
 body {
   color: var(--color-1);
   background-color: var(--color-5);
   font-family: "Work Sans", sans-serif;
+  font-weight: 500;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -34,13 +35,13 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply m-2 p-4 rounded-xl bg-[var(--color-3)] hover:bg-[var(--color-4)] hover:text-[var(--color-2)];
+    @apply m-2 p-4 rounded-xl bg-[var(--color-3)] hover:bg-[var(--color-4)] text-[var(--color-5)] hover:text-[var(--color-2)];
   }
   section {
     @apply min-h-screen p-6 md:p-8;
   }
+  input {
+    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg
+  }
 }
 
-* {
-  transition: all 150ms ease-in-out;
-}

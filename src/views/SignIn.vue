@@ -5,13 +5,16 @@ import axios from "axios";
 import { useUserStore } from "@/stores/userDetails";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
 const router = useRouter();
 
 const loading = ref(false);
 const email = ref("");
 const password = ref("");
-const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
+
 const wrongDetails = ref(false);
+const serverError = ref(false);
+
 async function onSubmit() {
   const apiUrl = import.meta.env.VITE_API_URL + "users/signin";
   loading.value = true;
@@ -26,11 +29,20 @@ async function onSubmit() {
       console.log(response);
       currentUser.value.email = response.data["email"];
       currentUser.value.id = response.data["id"];
+      currentUser.value.name = response.data["name"];
+      currentUser.value.password = response.data["password"];
       console.log("logged in, redirecting");
       router.replace("/dashboard");
     })
-    .catch(() => {
-      wrongDetails.value = true;
+    .catch((error) => {
+      if (error.response) {
+        if (error.response!.status === 401) {
+          wrongDetails.value = true;
+        } else {
+          console.log(error);
+          serverError.value = true;
+        }
+      }
     });
   isLoggedIn.value = isLoggedIn.value;
   loading.value = false;
@@ -39,7 +51,7 @@ async function onSubmit() {
 
 <template>
   <section>
-    <Spinner v-show="loading" class="float-right" />
+    <Spinner :style="{ opacity: loading ? '1' : '0' }" class="float-right" />
     <div class="flex items-center justify-center m-5 md:m-40">
       <form
         @submit.prevent="onSubmit()"
@@ -51,7 +63,7 @@ async function onSubmit() {
           name="email"
           id="email"
           v-model="email"
-          class="outline bg-transparent rounded-lg w-full h-12 p-8"
+          class="w-full h-12 p-8"
           placeholder="Your email address"
           required
         />
@@ -60,12 +72,18 @@ async function onSubmit() {
           name="password"
           id="password"
           v-model="password"
-          class="outline bg-transparent rounded-lg w-full h-12 p-8"
+          class="w-full h-12 p-8"
           placeholder="Your password"
           required
         />
-        <div v-if="wrongDetails" class="dark:text-white text-black">
+        <div
+          :style="{ opacity: wrongDetails ? 1 : 0 }"
+          class="dark:text-white text-black"
+        >
           Incorrect username/password
+        </div>
+        <div v-show="serverError" class="dark:text-white text-black">
+          Sorry, something went wrong, please try again later
         </div>
         <p class="mt-5">
           Don't have an account?

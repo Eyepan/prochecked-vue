@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", () => {
   const currentUser = ref<User>(
     JSON.parse(localStorage.getItem("currentUser") || "null") || {
       id: "",
+      name: "",
       email: "",
       password: "",
     }
