@@ -1,7 +1,7 @@
 @import "./base.css";
 
 * {
-  transition: all 150ms ease-in-out;
+  transition: all 100ms ease-in-out;
 }
 
 :root {
@@ -17,8 +17,6 @@
 }
 
 body {
-  color: var(--color-1);
-  background-color: var(--color-5);
   font-family: "Work Sans", sans-serif;
   font-weight: 500;
   text-rendering: optimizeLegibility;
@@ -29,14 +27,12 @@ body {
 
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    color: var(--color-5);
-    background-color: var(--color-1)
-  }
-}
+
 
 @layer components {
+  body {
+    @apply text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-5)] dark:bg-[var(--color-1)];
+  }
   .btn-primary {
     @apply m-2 p-4 rounded-xl bg-[var(--color-3)] hover:bg-[var(--color-4)] text-[var(--color-5)] hover:text-[var(--color-2)];
   }

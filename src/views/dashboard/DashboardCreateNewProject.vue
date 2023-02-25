@@ -4,8 +4,10 @@ import axios from "axios";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
-const { currentUser, projects } = storeToRefs(useUserStore());
+import { useRouter } from "vue-router";
 
+const { currentUser, projects, currentProject } = storeToRefs(useUserStore());
+const router = useRouter();
 const loading = ref(false);
 const title = ref("");
 const description = ref("");
@@ -34,6 +36,13 @@ async function handleSubmit() {
         )
         .then((response) => {
           projects.value = response.data;
+          const proj = projects.value.find(
+            (project) => project.title === title.value
+          );
+          if (proj) {
+            currentProject.value = proj;
+          }
+          router.push("/project");
           console.log(projects.value);
         })
         .catch(() => {

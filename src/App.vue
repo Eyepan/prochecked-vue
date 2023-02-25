@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { RouterView } from "vue-router";
 import { useRouter } from "vue-router";
 import { useUserStore } from "./stores/appStore";
+import DarkMode from "./components/DarkMode.vue";
 
 const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
 const router = useRouter();
@@ -14,6 +15,7 @@ if (isLoggedIn.value) {
 </script>
 
 <template>
+  <DarkMode class="absolute float-right" />
   <div class="">
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">

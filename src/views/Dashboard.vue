@@ -112,7 +112,10 @@ function signOut() {
       </button>
     </div>
 
-    <section id="content" class="absolute md:left-1/4 md:h-screen w-3/4">
+    <section
+      id="content"
+      class="absolute md:left-1/4 lg:left-1/5 md:h-screen w-3/4"
+    >
       <router-view></router-view>
     </section>
   </div>
