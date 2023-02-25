@@ -2,6 +2,7 @@
 import Spinner from "@/components/Spinner.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { vAutoAnimate } from "@formkit/auto-animate";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
@@ -52,6 +53,7 @@ async function onSubmit() {
     <Spinner :style="{ opacity: loading ? '1' : '0' }" class="float-right" />
     <div class="flex items-center justify-center m-5 md:m-40">
       <form
+        v-auto-animate
         @submit.prevent="onSubmit()"
         class="mt-5 flex flex-col items-start gap-5 outline rounded-3xl p-8 md:p-16"
       >

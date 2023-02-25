@@ -2,6 +2,8 @@
 import Spinner from "@/components/Spinner.vue";
 import { ref } from "vue";
 import axios from "axios";
+import { vAutoAnimate } from "@formkit/auto-animate";
+
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
@@ -19,11 +21,13 @@ const insufficientPassword = ref(false);
 const serverError = ref(false);
 
 async function onSubmit() {
+  serverError.value = false;
+  duplicateMail.value = false;
   if (password.value.length < 8) {
     insufficientPassword.value = true;
     return;
   }
-
+  insufficientPassword.value = false;
   const apiUrl = import.meta.env.VITE_API_URL + "users";
   loading.value = true;
   await axios
@@ -52,11 +56,9 @@ async function onSubmit() {
       if (error.response) {
         if (error.response!.status === 409 || error.response!.status === 401) {
           duplicateMail.value = true;
-        } else {
-          console.log(error);
-          serverError.value = true;
         }
       }
+      serverError.value = true;
     });
   loading.value = false;
 }
@@ -67,6 +69,7 @@ async function onSubmit() {
     <Spinner :style="{ opacity: loading ? '1' : '0' }" class="float-right" />
     <div class="flex items-center justify-center m-5 md:m-40">
       <form
+        v-auto-animate
         @submit.prevent="onSubmit()"
         method="post"
         class="mt-5 flex flex-col items-end gap-5 outline rounded-3xl p-8 md:p-16"
@@ -99,7 +102,7 @@ async function onSubmit() {
           placeholder="A new password"
           required
         />
-        <div v-show="duplicateMail" class="dark:text-white text-black">
+        <div v-if="duplicateMail" class="dark:text-white text-black">
           An account with this email already exists.
           <RouterLink
             class="rounded-xl p-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
@@ -107,13 +110,13 @@ async function onSubmit() {
             >Sign-in?</RouterLink
           >
         </div>
-        <div v-show="insufficientPassword" class="dark:text-white text-black">
+        <div v-if="insufficientPassword" class="dark:text-white text-black">
           Password must contain 8 characters or more
         </div>
-        <div v-show="serverError" class="dark:text-white text-black">
-          Sorry, something went wrong, please try again later
+        <div v-if="serverError" class="dark:text-white text-black">
+          Sorry. Something went wrong on our side, please try again later
         </div>
-        <p class="mt-5" v-show="!duplicateMail">
+        <p class="mt-5" v-if="!serverError">
           Already have an account?
           <RouterLink
             class="rounded-xl p-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
@@ -121,7 +124,9 @@ async function onSubmit() {
             >Sign-in</RouterLink
           >
         </p>
-        <button type="submit" class="w-full btn-primary">Sign Up!</button>
+        <button v-if="!serverError" type="submit" class="w-full btn-primary">
+          Sign Up!
+        </button>
       </form>
     </div>
   </section>

@@ -1,5 +1,5 @@
-div
 <script setup lang="ts">
+import { vAutoAnimate } from "@formkit/auto-animate";
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { onMounted } from "vue";
@@ -81,20 +81,19 @@ function signOut() {
         Projects:
       </div>
       <div class="mt-3 flex flex-col gap-2">
-        <TransitionGroup name="list" tag="ol">
-          <ol
-            v-for="project in projects"
-            :key="project.id"
-            class="flex flex-row gap-2 items-center"
+        <ol
+          v-auto-animate
+          v-for="project in projects"
+          :key="project.id"
+          class="flex flex-row gap-2 items-center"
+        >
+          <RouterLink
+            to="/project"
+            class="text-lg hover:font-bold cursor-pointer"
           >
-            <RouterLink
-              to="/project"
-              class="text-lg hover:font-bold cursor-pointer"
-            >
-              <span @click="currentProject = project">{{ project.title }}</span>
-            </RouterLink>
-          </ol>
-        </TransitionGroup>
+            <span @click="currentProject = project">{{ project.title }}</span>
+          </RouterLink>
+        </ol>
         <div v-if="projects.length == 0" class="text-md">No projects :(</div>
         <div class="w-full h-1 bg-black rounded-3xl"></div>
         <RouterLink

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { vAutoAnimate } from "@formkit/auto-animate";
 import Spinner from "@/components/Spinner.vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
@@ -7,6 +8,7 @@ import axios from "axios";
 import { useRouter } from "vue-router";
 const { currentProject, projects, currentUser } = storeToRefs(useUserStore());
 const loading = ref(false);
+const tryingToDelete = ref(false);
 const router = useRouter();
 if (projects.value.length > 0) {
   currentProject.value = projects.value[0];
@@ -61,11 +63,47 @@ async function deleteProject() {
 </script>
 
 <template>
-  <div class="w-full">
+  <div v-auto-animate class="w-full">
+    <div
+      v-if="tryingToDelete"
+      :style="{
+        opacity: tryingToDelete ? '1' : '0',
+      }"
+      class="fixed top-0 left-0 right-0 z-50 p-4 w-screen h-screen bg-[var(--color-3)] bg-opacity-80 overflow-hidden"
+    >
+      <div class="relative w-full h-full flex items-center justify-center">
+        <div class="relative">
+          <div class="p-6 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-9xl"></i>
+            <h3 class="text-lg font-normal">
+              Are you sure you want to delete this project?
+            </h3>
+            <p>All your data related to the project will be lost</p>
+            <button
+              type="button"
+              @click="
+                deleteProject();
+                tryingToDelete = false;
+              "
+              class="mt-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
+            >
+              Yes, I'm sure
+            </button>
+            <button
+              @click="tryingToDelete = false"
+              type="button"
+              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+            >
+              No, cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <Spinner v-show="loading" class="absolute top-3 left-3" />
     <div class="flex justify-between items-center my-2">
       <p class="text-5xl">{{ currentProject.title }}</p>
-      <button class="hover:text-red-500" @click="deleteProject()">
+      <button class="hover:text-red-500" @click="tryingToDelete = true">
         <i class="fa fa-trash fa-xl"></i>
       </button>
     </div>
