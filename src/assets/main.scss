@@ -1,14 +1,24 @@
 @import "./base.css";
 
-$color-1: #461220;
-$color-2: #8C2F39;
-$color-3: #B23A48;
-$color-4: #FCB9B2;
-$color-5: #FED0BB;
 
+:root {
+
+  --light-green: #b9ffb7ff;
+  --celadon: #abedc6ff;
+  --tiffany-blue: #98d9c2ff;
+  --carrot-orange: #f19a3eff;
+  --van-dyke: #403233ff;
+
+
+  --color-1: #071330;
+  --color-2: #0C4160;
+  --color-3: #738FA7;
+  --color-4: #B1D4E0;
+  --color-5: #C3CEDA;
+}
 body {
-  color: $color-1;
-  background-color: $color-5;
+  color: var(--color-1);
+  background-color: var(--color-5);
   font-family: "Work Sans", sans-serif;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,14 +27,14 @@ body {
 
 @media (prefers-color-scheme: dark) {
   body {
-    color: $color-5;
-    background-color: $color-1;
+    color: var(--color-5);
+    background-color: var(--color-1)
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply m-2 p-4 rounded-xl bg-[#B23A48] hover:bg-[#FCB9B2] hover:text-[#8C2F39];
+    @apply m-2 p-4 rounded-xl bg-[var(--color-3)] hover:bg-[var(--color-4)] hover:text-[var(--color-2)];
   }
   section {
     @apply min-h-screen p-6 md:p-8;
