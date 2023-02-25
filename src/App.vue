@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { storeToRefs } from "pinia";
 import { RouterView } from "vue-router";
-const show = ref(true);
+import { useRouter } from "vue-router";
+import { useUserStore } from "./stores/userDetails";
+
+const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
+const router = useRouter();
+if (isLoggedIn.value) {
+  router.replace("/dashboard");
+} else {
+  router.replace("/");
+}
 </script>
 
 <template>

@@ -22,6 +22,15 @@ body {
   }
 }
 
+@layer components {
+  .btn-primary {
+    @apply m-2 p-4 rounded-xl bg-[#B23A48] hover:bg-[#FCB9B2] hover:text-[#8C2F39];
+  }
+  section {
+    @apply min-h-screen p-6 md:p-8;
+  }
+}
+
 * {
   transition: all 150ms ease-in-out;
 }
