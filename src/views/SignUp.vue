@@ -5,6 +5,7 @@ import axios from "axios";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+
 const router = useRouter();
 
 const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
@@ -49,7 +50,7 @@ async function onSubmit() {
     })
     .catch((error) => {
       if (error.response) {
-        if (error.response!.status === 401) {
+        if (error.response!.status === 409 || error.response!.status === 401) {
           duplicateMail.value = true;
         } else {
           console.log(error);

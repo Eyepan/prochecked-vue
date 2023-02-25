@@ -11,9 +11,14 @@ const router = useRouter();
 const loading = ref(false);
 const title = ref("");
 const description = ref("");
+const deadline = ref("");
 
 async function handleSubmit() {
   loading.value = true;
+  console.log(deadline);
+  const created = new Date().toISOString();
+  const deadlineValue = new Date(deadline.value).toISOString();
+  console.log(created, deadlineValue);
   axios
     .post(
       import.meta.env.VITE_API_URL +
@@ -23,6 +28,8 @@ async function handleSubmit() {
       {
         title: title.value,
         description: description.value,
+        created: created,
+        deadline: deadlineValue,
       }
     )
     .then(() => {
@@ -82,6 +89,8 @@ async function handleSubmit() {
       placeholder="Project Description (optional)"
       class="p-2 resize-none"
     />
+    <div class="text-l">When do you want to finish this project?</div>
+    <input type="date" v-model="deadline" class="p-2" />
     <button
       class="btn-primary py-2 mx-0 flex items-center justify-evenly"
       type="submit"

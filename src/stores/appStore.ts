@@ -19,6 +19,9 @@ export const useUserStore = defineStore("user", () => {
     title: "",
     description: "",
     team_leader_id: "",
+    created: "",
+    deadline: "",
+    completed: false,
   });
   if (currentUser.value && currentUser.value.id && currentUser.value.email) {
     isLoggedIn.value = true;

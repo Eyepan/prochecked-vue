@@ -55,14 +55,14 @@ function signOut() {
       <div class="mt-3 flex flex-col gap-2 my-3">
         <RouterLink
           to="home"
-          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-1)]"
+          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-1)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-chart-simple"></i>
           Dashboard</RouterLink
         >
         <RouterLink
           to="profile"
-          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-2)]"
+          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-2)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-person"></i>
           Profile
@@ -101,7 +101,7 @@ function signOut() {
           to="create"
           class="m-0 w-full text-left text-lg p-1 px-2 rounded-lg hover:bg-[var(--button-bg-color-2)] hover:text-white"
         >
-          Create project!
+          Create a new project!
         </RouterLink>
       </div>
       <button

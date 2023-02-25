@@ -3,4 +3,7 @@ export default interface Project {
   title: string;
   description: string | undefined;
   team_leader_id: string;
+  created: string;
+  deadline: string;
+  completed: boolean;
 }
