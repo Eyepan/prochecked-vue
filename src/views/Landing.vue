@@ -4,10 +4,14 @@ import { RouterLink } from "vue-router";
 
 <template>
   <section class="lg:m-20">
-    <img class="float-right" src="@/assets/images/home.png" alt="" />
+    <img
+      class="mt-5 rounded-3xl drop-shadow-lg float-right w-[calc(50%_-_2rem)]"
+      src="@/assets/images/home.png"
+      alt=""
+    />
     <div class="text-5xl md:text-7xl font-extrabold">Pro-Checked</div>
     <div class="text-l md:text-xl font-bold">
-      The easy way to organize a project
+      Check all the boxes of your project
     </div>
 
     <div class="text-l md:text-xl m-10 mb-0 ml-0">

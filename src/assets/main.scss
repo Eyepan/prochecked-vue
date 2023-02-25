@@ -12,7 +12,7 @@
   --color-5: #fffcf2ff;
 
   --button-bg-color-1: #478978ff;
-  --button-bg-color-2: #EF6351ff;
+  --button-bg-color-2: #eb5e28ff;
 
 }
 
@@ -24,6 +24,9 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+  width: 100vw;
+
 }
 
 @media (prefers-color-scheme: dark) {
@@ -43,5 +46,8 @@ body {
   input {
     @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg
   }
-}
+  textarea {
+    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg
 
+  }
+}

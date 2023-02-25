@@ -1,10 +1,13 @@
+div
 <script setup lang="ts">
 import { useRouter } from "vue-router";
 import axios from "axios";
 import { onMounted } from "vue";
-import { useUserStore } from "@/stores/userDetails";
+import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
-const { currentUser, projects, isLoggedIn } = storeToRefs(useUserStore());
+const { currentUser, projects, isLoggedIn, currentProject } = storeToRefs(
+  useUserStore()
+);
 
 const router = useRouter();
 onMounted(() => {
@@ -48,42 +51,52 @@ function signOut() {
         </div>
       </div>
 
-      <div class="text-xl mt-3">
-        <i class="fa-solid fa-house"></i>
-        Home:
+      <div class="text-xl mt-3">Home:</div>
+      <div class="mt-3 flex flex-col gap-2 my-3">
+        <RouterLink
+          to="home"
+          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-1)]"
+        >
+          <i class="fa-solid fa-chart-simple"></i>
+          Dashboard</RouterLink
+        >
+        <RouterLink
+          to="profile"
+          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-2)]"
+        >
+          <i class="fa-solid fa-person"></i>
+          Profile
+        </RouterLink>
+        <RouterLink
+          to="/settings"
+          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--color-1)] hover:text-[var(--color-5)]"
+        >
+          <i class="fa-solid fa-gear"></i>
+          Settings
+        </RouterLink>
       </div>
-      <div class="mt-3 flex flex-col gap-2">
-        <div class="flex flex-row gap-2 w-full">
-          <RouterLink
-            to="home"
-            class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-1)]"
-            >Dashboard</RouterLink
-          >
-        </div>
-        <div class="flex flex-row gap-2 w-full">
-          <RouterLink
-            to="profile"
-            class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-2)]"
-          >
-            Profile
-          </RouterLink>
-        </div>
-      </div>
-      <div class="text-xl mt-3">
+      <div class="w-full h-1 bg-black rounded-3xl"></div>
+      <div class="text-xl my-3">
         <i class="fa-solid fa-diagram-project"></i>
         Projects:
       </div>
       <div class="mt-3 flex flex-col gap-2">
-        <div
-          v-if="projects.length > 0"
-          v-for="project in projects"
-          :key="project.id"
-          class="flex flex-row gap-2 items-center"
-        >
-          <div class="text-lg">{{ project.title }}</div>
-          <div class="text-sm">{{ project.description }}</div>
-        </div>
-        <div v-else class="text-md">No projects :(</div>
+        <TransitionGroup name="list" tag="ol">
+          <ol
+            v-for="project in projects"
+            :key="project.id"
+            class="flex flex-row gap-2 items-center"
+          >
+            <RouterLink
+              to="/project"
+              class="text-lg hover:font-bold cursor-pointer"
+            >
+              <span @click="currentProject = project">{{ project.title }}</span>
+            </RouterLink>
+          </ol>
+        </TransitionGroup>
+        <div v-if="projects.length == 0" class="text-md">No projects :(</div>
+        <div class="w-full h-1 bg-black rounded-3xl"></div>
         <RouterLink
           to="create"
           class="m-0 w-full text-left text-lg p-1 px-2 rounded-lg hover:bg-[var(--button-bg-color-2)] hover:text-white"
@@ -92,15 +105,27 @@ function signOut() {
         </RouterLink>
       </div>
       <button
-        class="absolute left-1/2 -translate-x-1/2 py-2 px-10 w-max text-l rounded-xl bottom-10 hover:bg-red-500 hover:text-white"
+        class="absolute left-1/2 -translate-x-1/2 bottom-10 py-2 px-10 w-max text-l rounded-xl hover:bg-red-500 hover:text-white"
         @click="signOut"
       >
         Sign-out
       </button>
     </div>
 
-    <section id="content" class="absolute md:left-1/4 md:h-screen">
-      <router-view> </router-view>
+    <section id="content" class="absolute md:left-1/4 md:h-screen w-3/4">
+      <router-view></router-view>
     </section>
   </div>
 </template>
+
+<style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 150ms ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>

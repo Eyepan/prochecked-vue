@@ -2,7 +2,7 @@
 import Spinner from "@/components/Spinner.vue";
 import { ref } from "vue";
 import axios from "axios";
-import { useUserStore } from "@/stores/userDetails";
+import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
@@ -27,21 +27,18 @@ async function onSubmit() {
       isLoggedIn.value = true;
       wrongDetails.value = false;
       console.log(response);
-      currentUser.value.email = response.data["email"];
-      currentUser.value.id = response.data["id"];
-      currentUser.value.name = response.data["name"];
-      currentUser.value.password = response.data["password"];
+      currentUser.value = response.data;
       console.log("logged in, redirecting");
       router.replace("/dashboard");
     })
     .catch((error) => {
       if (error.response) {
-        if (error.response!.status === 401) {
+        if (error.response!.status === 404) {
           wrongDetails.value = true;
-        } else {
-          console.log(error);
-          serverError.value = true;
         }
+      } else {
+        console.log(error);
+        serverError.value = true;
       }
     });
   isLoggedIn.value = isLoggedIn.value;
@@ -76,15 +73,18 @@ async function onSubmit() {
           placeholder="Your password"
           required
         />
-        <div
-          :style="{ opacity: wrongDetails ? 1 : 0 }"
-          class="dark:text-white text-black"
-        >
-          Incorrect username/password
-        </div>
-        <div v-show="serverError" class="dark:text-white text-black">
-          Sorry, something went wrong, please try again later
-        </div>
+
+        <Transition>
+          <div v-if="wrongDetails" class="text-red-500">
+            Incorrect username/password
+          </div>
+        </Transition>
+        <Transition>
+          <div v-if="serverError" class="text-red-500">
+            Sorry, something went wrong, please try again later
+          </div>
+        </Transition>
+
         <p class="mt-5">
           Don't have an account?
           <RouterLink
@@ -98,3 +98,15 @@ async function onSubmit() {
     </div>
   </section>
 </template>
+
+<style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 150ms ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>

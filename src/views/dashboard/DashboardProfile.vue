@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/userDetails";
+import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 const { currentUser } = storeToRefs(useUserStore());
 </script>

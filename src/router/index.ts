@@ -4,9 +4,10 @@ import Landing from "../views/Landing.vue";
 import SignUp from "../views/SignUp.vue";
 import Dashboard from "@/views/Dashboard.vue";
 import DashboardHome from "@/views/dashboard/DashboardHome.vue";
-import DashboardProjects from "@/views/dashboard/DashboardProjects.vue";
+import DashboardProject from "@/views/dashboard/DashboardProject.vue";
 import DashboardProfile from "@/views/dashboard/DashboardProfile.vue";
 import DashboardCreateNewProject from "@/views/dashboard/DashboardCreateNewProject.vue";
+import Settings from "@/views/Settings.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -26,6 +27,11 @@ const router = createRouter({
       component: SignIn,
     },
     {
+      path: "/settings",
+      name: "settings",
+      component: () => Settings,
+    },
+    {
       path: "/dashboard",
       name: "dashboard",
       component: Dashboard,
@@ -40,9 +46,9 @@ const router = createRouter({
           component: DashboardHome,
         },
         {
-          path: "/projects",
-          name: "projects",
-          component: DashboardProjects,
+          path: "/project",
+          name: "project",
+          component: DashboardProject,
         },
         {
           path: "/profile",

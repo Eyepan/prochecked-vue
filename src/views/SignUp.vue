@@ -2,7 +2,7 @@
 import Spinner from "@/components/Spinner.vue";
 import { ref } from "vue";
 import axios from "axios";
-import { useUserStore } from "@/stores/userDetails";
+import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -40,10 +40,7 @@ async function onSubmit() {
         })
         .then((response) => {
           isLoggedIn.value = true;
-          currentUser.value.email = response.data["email"];
-          currentUser.value.id = response.data["id"];
-          currentUser.value.name = response.data["name"];
-          currentUser.value.password = response.data["password"];
+          currentUser.value = response.data;
           console.log("logged in, redirecting");
           router.replace("/dashboard");
         })

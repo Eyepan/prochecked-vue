@@ -14,7 +14,12 @@ export const useUserStore = defineStore("user", () => {
     }
   );
   const projects = ref<Project[]>([]);
-
+  const currentProject = ref<Project>({
+    id: "",
+    title: "",
+    description: "",
+    team_leader_id: "",
+  });
   if (currentUser.value && currentUser.value.id && currentUser.value.email) {
     isLoggedIn.value = true;
   }
@@ -26,5 +31,5 @@ export const useUserStore = defineStore("user", () => {
     },
     { deep: true }
   );
-  return { isLoggedIn, currentUser, projects };
+  return { isLoggedIn, currentUser, projects, currentProject };
 });

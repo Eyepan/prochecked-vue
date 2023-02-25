@@ -2,7 +2,7 @@
 import { storeToRefs } from "pinia";
 import { RouterView } from "vue-router";
 import { useRouter } from "vue-router";
-import { useUserStore } from "./stores/userDetails";
+import { useUserStore } from "./stores/appStore";
 
 const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
 const router = useRouter();
