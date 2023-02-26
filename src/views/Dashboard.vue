@@ -20,15 +20,6 @@ onMounted(async () => {
   }
 });
 
-watch(projects, async () => {
-  const response = await getUserProjects(currentUser.value.user_id);
-  if (typeof response === "number") {
-    // TODO: handle wrong stuff
-  } else {
-    projects.value = response;
-  }
-});
-
 function signOut() {
   currentUser.value.user_id = "";
   currentUser.value.email = "";
@@ -41,10 +32,11 @@ function signOut() {
 </script>
 
 <template>
-  <div class="dashboard-container">
+  <div class="flex flex-row">
     <div
+      v-auto-animate
       id="sidebar"
-      class="absolute md:w-1/4 lg:w-1/5 md:p-4 md:h-screen text-[var(--color-4)] dark:text-[var(--color-2)] bg-[var(--color-2)] dark:bg-[var(--color-4)]"
+      class="relative md:w-1/4 lg:w-1/5 p-4 h-screen text-[var(--color-4)] dark:text-[var(--color-2)] bg-[var(--color-2)] dark:bg-[var(--color-4)]"
     >
       <div class="text-2xl">
         Hi
@@ -87,13 +79,14 @@ function signOut() {
           v-auto-animate
           v-for="project in projects"
           :key="project.project_id"
+          @click="currentProject = project"
           class="flex flex-row gap-2 items-center"
         >
           <RouterLink
             to="/project"
-            class="text-lg hover:font-bold cursor-pointer"
+            class="text-lg hover:font-bold cursor-pointer w-full px-2 py-1 rounded-lg hover:bg-[var(--color-1)] dark:hover:bg-[var(--color-5)]"
           >
-            <span @click="currentProject = project">{{ project.title }}</span>
+            {{ project.title }}
           </RouterLink>
         </ol>
         <div v-if="projects.length == 0" class="text-md">No projects :(</div>
@@ -113,23 +106,8 @@ function signOut() {
       </button>
     </div>
 
-    <section
-      id="content"
-      class="absolute md:left-1/4 lg:left-1/5 md:h-screen w-3/4"
-    >
+    <section id="content" class="h-screen md:w-3/4 lg:w-4/5">
       <router-view></router-view>
     </section>
   </div>
 </template>
-
-<style scoped>
-.list-enter-active,
-.list-leave-active {
-  transition: all 150ms ease;
-}
-.list-enter-from,
-.list-leave-to {
-  opacity: 0;
-  transform: translateX(30px);
-}
-</style>

@@ -2,6 +2,8 @@ import axios from "axios";
 const apiUrl = import.meta.env.VITE_API_URL;
 import type User from "@/models/user.model";
 import type Project from "@/models/project.model";
+import type Task from "@/models/task.model";
+
 export async function signin(
   email: string,
   password: string
@@ -104,14 +106,6 @@ export async function getUserProjects(
     return projects;
   }
 }
-// {
-//   "project_id": "1cb833e5-66eb-4e87-8407-f6010e1d1594",
-//   "user_id": "71c28fd9-661a-4286-8b2f-6ed291523460",
-//   "title": "balloon",
-//   "description": "a note taking application",
-//   "created_at": "26-02-2023",
-//   "deadline": "3-3-2023"
-// }
 
 export async function createNewProject(
   user_id: string,
@@ -128,7 +122,6 @@ export async function createNewProject(
     description: "",
     created_at: "",
     deadline: "",
-    completed: false,
   };
   await axios
     .post(apiUrl + "projects/" + user_id, {
@@ -167,4 +160,66 @@ export async function deleteProject(
     });
 
   return status;
+}
+
+export async function getTasksOfProject(user_id: string, project_id: string) {
+  let tasks: Task[] = [];
+  let status = 200;
+  await axios
+    .get(apiUrl + "tasks/" + user_id + "/" + project_id)
+    .then((response) => {
+      tasks = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+  if (status !== 200) {
+    return status;
+  }
+  return tasks;
+}
+
+export async function addTaskToProject(
+  user_id: string,
+  project_id: string,
+  title: string,
+  description: string,
+  due_date: string,
+  priority: number,
+  completed: number
+) {
+  let status = 200;
+  let task: Task = {
+    task_id: "",
+    project_id: "",
+    title: "",
+    description: "",
+    due_date: "",
+    priority: 0,
+    completed: 0,
+  };
+  await axios
+    .post(apiUrl + "tasks/" + user_id + "/" + project_id, {
+      title: title,
+      description: description,
+      due_date: due_date,
+      priority: priority,
+      completed: completed,
+    })
+    .then((response) => {
+      task = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+
+  if (status !== 200) {
+    return status;
+  } else {
+    return task;
+  }
 }

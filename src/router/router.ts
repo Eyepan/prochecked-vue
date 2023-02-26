@@ -29,7 +29,7 @@ const router = createRouter({
     {
       path: "/settings",
       name: "settings",
-      component: () => Settings,
+      component: Settings,
     },
     {
       path: "/dashboard",

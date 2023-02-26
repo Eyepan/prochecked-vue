@@ -5,5 +5,4 @@ export default interface Project {
   description: string | undefined;
   created_at: string;
   deadline: string;
-  completed: boolean;
 }

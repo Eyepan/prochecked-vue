@@ -1,3 +1,4 @@
+import type Task from "@/models/task.model";
 import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import type User from "@/models/user.model";
@@ -21,8 +22,10 @@ export const useUserStore = defineStore("user", () => {
     description: "",
     created_at: "",
     deadline: "",
-    completed: false,
   });
+
+  const currentTasks = ref<Task[]>([]);
+
   if (
     currentUser.value &&
     currentUser.value.user_id &&
@@ -38,5 +41,5 @@ export const useUserStore = defineStore("user", () => {
     },
     { deep: true }
   );
-  return { isLoggedIn, currentUser, projects, currentProject };
+  return { isLoggedIn, currentUser, projects, currentProject, currentTasks };
 });
