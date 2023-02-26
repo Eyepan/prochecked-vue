@@ -7,7 +7,7 @@ export const useUserStore = defineStore("user", () => {
   const isLoggedIn = ref(false);
   const currentUser = ref<User>(
     JSON.parse(localStorage.getItem("currentUser") || "null") || {
-      id: "",
+      user_id: "",
       name: "",
       email: "",
       password: "",
@@ -15,15 +15,19 @@ export const useUserStore = defineStore("user", () => {
   );
   const projects = ref<Project[]>([]);
   const currentProject = ref<Project>({
-    id: "",
+    project_id: "",
+    user_id: "",
     title: "",
     description: "",
-    team_leader_id: "",
-    created: "",
+    created_at: "",
     deadline: "",
     completed: false,
   });
-  if (currentUser.value && currentUser.value.id && currentUser.value.email) {
+  if (
+    currentUser.value &&
+    currentUser.value.user_id &&
+    currentUser.value.email
+  ) {
     isLoggedIn.value = true;
   }
 

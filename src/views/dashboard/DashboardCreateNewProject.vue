@@ -5,6 +5,7 @@ import { ref } from "vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+import { createNewProject, getUserProjects } from "@/utils/utils";
 
 const { currentUser, projects, currentProject } = storeToRefs(useUserStore());
 const router = useRouter();
@@ -16,49 +17,28 @@ const deadline = ref("");
 async function handleSubmit() {
   loading.value = true;
   console.log(deadline);
-  const created = new Date().toISOString();
-  const deadlineValue = new Date(deadline.value).toISOString();
-  console.log(created, deadlineValue);
-  axios
-    .post(
-      import.meta.env.VITE_API_URL +
-        "users/" +
-        currentUser.value.id +
-        "/projects",
-      {
-        title: title.value,
-        description: description.value,
-        created: created,
-        deadline: deadlineValue,
-      }
-    )
-    .then(() => {
-      console.log("Project created!");
-      axios
-        .get(
-          import.meta.env.VITE_API_URL +
-            "users/" +
-            currentUser.value?.id +
-            "/projects"
-        )
-        .then((response) => {
-          projects.value = response.data;
-          const proj = projects.value.find(
-            (project) => project.title === title.value
-          );
-          if (proj) {
-            currentProject.value = proj;
-          }
-          router.push("/project");
-          console.log(projects.value);
-        })
-        .catch(() => {
-          console.log("no projects available");
-        });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  const createdString = new Date().toISOString();
+  const deadlineString = new Date(deadline.value).toISOString();
+  console.log(createdString, deadlineString);
+  const response = await createNewProject(
+    currentUser.value.user_id,
+    title.value,
+    description.value,
+    createdString,
+    deadlineString
+  );
+  if (typeof response === "number") {
+    // TODO: handle error
+  } else {
+    const p = await getUserProjects(currentUser.value.user_id);
+    if (typeof p === "number") {
+      // TODO: handle error
+    } else {
+      projects.value = p;
+      currentProject.value = response;
+      router.push("/project");
+    }
+  }
   loading.value = false;
 }
 </script>

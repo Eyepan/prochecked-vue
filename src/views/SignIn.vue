@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import Spinner from "@/components/Spinner.vue";
 import { ref } from "vue";
-import axios from "axios";
 import { vAutoAnimate } from "@formkit/auto-animate";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-
+import { signin } from "@/utils/utils";
 const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
 const router = useRouter();
 
@@ -18,32 +17,19 @@ const wrongDetails = ref(false);
 const serverError = ref(false);
 
 async function onSubmit() {
-  const apiUrl = import.meta.env.VITE_API_URL + "users/signin";
   loading.value = true;
-  await axios
-    .post(apiUrl, {
-      email: email.value,
-      password: password.value,
-    })
-    .then((response) => {
-      isLoggedIn.value = true;
-      wrongDetails.value = false;
-      console.log(response);
-      currentUser.value = response.data;
-      console.log("logged in, redirecting");
-      router.replace("/dashboard");
-    })
-    .catch((error) => {
-      if (error.response) {
-        if (error.response!.status === 404) {
-          wrongDetails.value = true;
-        }
-      } else {
-        console.log(error);
-        serverError.value = true;
-      }
-    });
-  isLoggedIn.value = isLoggedIn.value;
+  const response = await signin(email.value, password.value);
+  if (typeof response === "number") {
+    if (response === 404) {
+      wrongDetails.value = true;
+    } else {
+      serverError.value = true;
+    }
+  } else {
+    isLoggedIn.value = true;
+    currentUser.value = response;
+    router.replace("/home");
+  }
   loading.value = false;
 }
 </script>

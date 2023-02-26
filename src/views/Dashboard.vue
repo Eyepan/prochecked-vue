@@ -1,34 +1,36 @@
 <script setup lang="ts">
 import { vAutoAnimate } from "@formkit/auto-animate";
 import { useRouter } from "vue-router";
-import axios from "axios";
-import { onMounted } from "vue";
+import { onMounted, watch } from "vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
+import { getUserProjects } from "@/utils/utils";
 const { currentUser, projects, isLoggedIn, currentProject } = storeToRefs(
   useUserStore()
 );
 
 const router = useRouter();
-onMounted(() => {
-  axios
-    .get(
-      import.meta.env.VITE_API_URL +
-        "users/" +
-        currentUser.value?.id +
-        "/projects"
-    )
-    .then((response) => {
-      projects.value = response.data;
-      console.log(projects.value);
-    })
-    .catch(() => {
-      console.log("no projects available");
-    });
+
+onMounted(async () => {
+  const response = await getUserProjects(currentUser.value.user_id);
+  if (typeof response === "number") {
+    // TODO: handle wrong stuff
+  } else {
+    projects.value = response;
+  }
+});
+
+watch(projects, async () => {
+  const response = await getUserProjects(currentUser.value.user_id);
+  if (typeof response === "number") {
+    // TODO: handle wrong stuff
+  } else {
+    projects.value = response;
+  }
 });
 
 function signOut() {
-  currentUser.value.id = "";
+  currentUser.value.user_id = "";
   currentUser.value.email = "";
   currentUser.value.password = "";
   isLoggedIn.value = false;
@@ -68,7 +70,7 @@ function signOut() {
           Profile
         </RouterLink>
         <RouterLink
-          to="/settings"
+          to="settings"
           class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--color-1)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-gear"></i>
@@ -84,7 +86,7 @@ function signOut() {
         <ol
           v-auto-animate
           v-for="project in projects"
-          :key="project.id"
+          :key="project.project_id"
           class="flex flex-row gap-2 items-center"
         >
           <RouterLink

@@ -7,5 +7,5 @@ const { currentUser } = storeToRefs(useUserStore());
 <template>
   <p>Your Name: {{ currentUser.name }}</p>
   <p>Your Email: {{ currentUser.email }}</p>
-  <p>Your ID: {{ currentUser.id }}</p>
+  <p>Your ID: {{ currentUser.user_id }}</p>
 </template>

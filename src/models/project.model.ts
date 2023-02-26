@@ -1,9 +1,9 @@
 export default interface Project {
-  id: string;
+  project_id: string;
+  user_id: string;
   title: string;
   description: string | undefined;
-  team_leader_id: string;
-  created: string;
+  created_at: string;
   deadline: string;
   completed: boolean;
 }

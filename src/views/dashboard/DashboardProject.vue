@@ -4,60 +4,27 @@ import Spinner from "@/components/Spinner.vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
-import axios from "axios";
+import { deleteProject, getUserProjects } from "@/utils/utils";
 import { useRouter } from "vue-router";
 const { currentProject, projects, currentUser } = storeToRefs(useUserStore());
 const loading = ref(false);
 const tryingToDelete = ref(false);
 const router = useRouter();
-if (projects.value.length > 0) {
+
+if (projects.value.length > 0 && currentProject.value.project_id === "") {
   currentProject.value = projects.value[0];
 }
 
-async function deleteProject() {
+async function deleteCurrentProject() {
   loading.value = true;
-  await axios
-    .delete(
-      import.meta.env.VITE_API_URL +
-        "users/" +
-        currentUser.value.id +
-        "/projects/" +
-        currentProject.value.id
-    )
-    .then(async () => {
-      console.log("Project deleted!");
-      await axios
-        .get(
-          import.meta.env.VITE_API_URL +
-            "users/" +
-            currentUser.value?.id +
-            "/projects"
-        )
-        .then((response) => {
-          projects.value = response.data;
-          if (projects.value.length > 0) {
-            currentProject.value = projects.value[0];
-          }
-          console.log(projects.value);
-        })
-        .catch(() => {
-          console.log("no projects available");
-          projects.value = [];
-          currentProject.value = {
-            id: "",
-            title: "",
-            description: "",
-            team_leader_id: "",
-            created: "",
-            deadline: "",
-            completed: false,
-          };
-          router.push("home");
-        });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  deleteProject(currentUser.value.user_id, currentProject.value.project_id);
+  const response = await getUserProjects(currentUser.value.user_id);
+  if (typeof response === "number") {
+    // TODO: handle wrong stuff
+  } else {
+    projects.value = response;
+  }
+  router.replace("/dashboard");
   loading.value = false;
 }
 </script>
@@ -82,7 +49,7 @@ async function deleteProject() {
             <button
               type="button"
               @click="
-                deleteProject();
+                deleteCurrentProject();
                 tryingToDelete = false;
               "
               class="mt-5 text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2"
@@ -107,13 +74,13 @@ async function deleteProject() {
         <i class="fa fa-trash fa-xl"></i>
       </button>
     </div>
-    <p class="text-xs">Project ID: {{ currentProject.id }}</p>
+    <p class="text-xs">Project ID: {{ currentProject.project_id }}</p>
     <div class="w-full h-1 bg-[var(--color-1)] dark:bg-[var(--color-5)]"></div>
     <p v-if="currentProject.description !== ''">
       Project Description: {{ currentProject.description }}
     </p>
     <p v-else>Project Description: No description available</p>
-    <p>Project created: {{ currentProject.created }}</p>
+    <p>Project created: {{ currentProject.created_at }}</p>
     <p>Project deadline: {{ currentProject.deadline }}</p>
     <p v-if="currentProject.completed">Project completed: Yes</p>
     <p v-else>Project completed: No</p>

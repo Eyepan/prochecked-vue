@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Spinner from "@/components/Spinner.vue";
 import { ref } from "vue";
-import axios from "axios";
 import { vAutoAnimate } from "@formkit/auto-animate";
 
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
+import { signup } from "@/utils/utils";
 
 const router = useRouter();
 
@@ -28,38 +28,19 @@ async function onSubmit() {
     return;
   }
   insufficientPassword.value = false;
-  const apiUrl = import.meta.env.VITE_API_URL + "users";
   loading.value = true;
-  await axios
-    .post(apiUrl, {
-      name: name.value,
-      email: email.value,
-      password: password.value,
-    })
-    .then(async () => {
-      const apiSignInUrl = import.meta.env.VITE_API_URL + "users/signin";
-      await axios
-        .post(apiSignInUrl, {
-          email: email.value,
-          password: password.value,
-        })
-        .then((response) => {
-          isLoggedIn.value = true;
-          currentUser.value = response.data;
-          console.log("logged in, redirecting");
-          router.replace("/dashboard");
-        })
-        .catch(() => {});
-      loading.value = false;
-    })
-    .catch((error) => {
-      if (error.response) {
-        if (error.response!.status === 409 || error.response!.status === 401) {
-          duplicateMail.value = true;
-        }
-      }
+  const response = await signup(name.value, email.value, password.value);
+  if (typeof response === "number") {
+    if (response === 409) {
+      duplicateMail.value = true;
+    } else {
       serverError.value = true;
-    });
+    }
+  } else {
+    isLoggedIn.value = true;
+    currentUser.value = response;
+    router.replace("/home");
+  }
   loading.value = false;
 }
 </script>
