@@ -41,5 +41,6 @@ export const useUserStore = defineStore("user", () => {
     },
     { deep: true }
   );
+
   return { isLoggedIn, currentUser, projects, currentProject, currentTasks };
 });

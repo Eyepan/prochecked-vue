@@ -13,7 +13,6 @@
 
   --button-bg-color-1: #478978ff;
   --button-bg-color-2: #eb5e28ff;
-
 }
 
 body {
@@ -24,10 +23,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
   width: 100vw;
-
 }
-
-
 
 @layer components {
   body {
@@ -40,10 +36,9 @@ body {
     @apply min-h-screen p-6 md:p-8;
   }
   input {
-    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg
+    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg;
   }
   textarea {
-    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg
-
+    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg;
   }
 }

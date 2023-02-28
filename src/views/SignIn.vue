@@ -19,16 +19,16 @@ const serverError = ref(false);
 async function onSubmit() {
   loading.value = true;
   const response = await signin(email.value, password.value);
-  if (typeof response === "number") {
+  if (typeof response !== "number") {
+    isLoggedIn.value = true;
+    currentUser.value = response;
+    router.replace("/home");
+  } else {
     if (response === 404) {
       wrongDetails.value = true;
     } else {
       serverError.value = true;
     }
-  } else {
-    isLoggedIn.value = true;
-    currentUser.value = response;
-    router.replace("/home");
   }
   loading.value = false;
 }

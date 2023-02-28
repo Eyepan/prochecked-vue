@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { vAutoAnimate } from "@formkit/auto-animate";
 import Spinner from "@/components/Spinner.vue";
+
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, watch } from "vue";
@@ -18,25 +19,19 @@ const loading = ref(false);
 const tryingToDelete = ref(false);
 const router = useRouter();
 
-async function deleteCurrentProject() {
-  loading.value = true;
-  deleteProject(currentUser.value.user_id, currentProject.value.project_id);
-  const response = await getUserProjects(currentUser.value.user_id);
-  if (typeof response === "number") {
-    // TODO: handle wrong stuff
-  } else {
-    projects.value = response;
-  }
-  router.replace("/dashboard");
-  loading.value = false;
-}
-
 const title = ref("");
 const description = ref("");
 const due_date = ref("");
 const priority = ref(0);
 const completed = ref(0);
 const showAddTaskModal = ref(false);
+
+const priorities = [
+  { label: "Low", value: 0 },
+  { label: "Medium", value: 1 },
+  { label: "High", value: 2 },
+  { label: "Do it right now", value: 3 },
+];
 
 onMounted(async () => {
   const response = await getTasksOfProject(
@@ -55,6 +50,7 @@ if (projects.value.length > 0 && currentProject.value.project_id === "") {
 }
 
 async function handleAddTask() {
+  loading.value = true;
   await addTaskToProject(
     currentUser.value.user_id,
     currentProject.value.project_id,
@@ -73,6 +69,24 @@ async function handleAddTask() {
   } else {
     currentTasks.value = response;
   }
+  loading.value = false;
+}
+
+async function deleteCurrentProject() {
+  loading.value = true;
+  await deleteProject(
+    currentUser.value.user_id,
+    currentProject.value.project_id
+  );
+  const response = await getUserProjects(currentUser.value.user_id);
+  if (typeof response === "number") {
+    // TODO: handle wrong stuff
+  } else {
+    projects.value = response;
+  }
+
+  router.replace("/dashboard");
+  loading.value = false;
 }
 </script>
 
@@ -119,8 +133,12 @@ async function handleAddTask() {
         <i class="fa fa-trash fa-xl"></i>
       </button>
     </div>
-    <p class="text-xs">Project ID: {{ currentProject.project_id }}</p>
+    <div class="h-2"></div>
+    <p class="text-s">Project ID: {{ currentProject.project_id }}</p>
+    <div class="h-2"></div>
+
     <div class="w-full h-1 bg-[var(--color-1)] dark:bg-[var(--color-5)]"></div>
+    <div class="h-2"></div>
     <div class="flex flex-row justify-between">
       <div>Created: {{ currentProject.created_at.substring(0, 10) }}</div>
       <div>Deadline: {{ currentProject.deadline.substring(0, 10) }}</div>
@@ -131,22 +149,16 @@ async function handleAddTask() {
     <p v-else>No description available</p>
     <p v-else>Project completed: No</p>
 
-    <!-- card for tasks -->
-    <div v-auto-animate class="flex gap-5">
+    <div class="flex gap-5">
+      <!-- card for tasks -->
       <div class="relative w-1/2 mt-4 outline rounded-lg p-4 h-1/2">
         <p class="text-xl">Tasks</p>
         <div v-if="currentTasks.length > 0" v-for="task in currentTasks">
           {{ task.title }}
         </div>
-        <div v-else>No tasks available for current project. Create one?</div>
-        <button @click="showAddTaskModal = !showAddTaskModal">
-          <i class="absolute bottom-8 right-5 fa-solid fa-plus fa-xl"></i>
-        </button>
-        <form v-if="showAddTaskModal" class="">
-          <input type="text" placeholder="Task Name" class="p-2" required />
-          <input type="text" placeholder="Task Name" class="p-2" />
-        </form>
+        <div v-else>No tasks available for current project.</div>
       </div>
+      <!-- timechart card -->
       <div class="relative w-1/2 mt-4 outline rounded-lg p-4 h-1/2">
         <p class="text-xl">Timechart</p>
       </div>
