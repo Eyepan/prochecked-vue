@@ -7,7 +7,7 @@ import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { createNewProject, getUserProjects } from "@/utils/utils";
 
-const { currentUser, projects, currentProject } = storeToRefs(useUserStore());
+const { currentUser, projects } = storeToRefs(useUserStore());
 const router = useRouter();
 const loading = ref(false);
 const title = ref("");
@@ -35,8 +35,7 @@ async function handleSubmit() {
       // TODO: handle error
     } else {
       projects.value = p;
-      currentProject.value = response;
-      router.push("/project");
+      router.push("/project/" + response.project_id + "");
     }
   }
   loading.value = false;

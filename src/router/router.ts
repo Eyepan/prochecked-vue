@@ -46,11 +46,6 @@ const router = createRouter({
           component: DashboardHome,
         },
         {
-          path: "/project",
-          name: "project",
-          component: DashboardProject,
-        },
-        {
           path: "/profile",
           name: "profile",
           component: DashboardProfile,
@@ -59,6 +54,11 @@ const router = createRouter({
           path: "/create",
           name: "create",
           component: DashboardCreateNewProject,
+        },
+        {
+          path: "/project/:id",
+          name: "project",
+          component: DashboardProject,
         },
       ],
     },

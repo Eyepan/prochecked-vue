@@ -5,9 +5,7 @@ import { onMounted, watch } from "vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { getUserProjects } from "@/utils/utils";
-const { currentUser, projects, isLoggedIn, currentProject } = storeToRefs(
-  useUserStore()
-);
+const { currentUser, projects, isLoggedIn } = storeToRefs(useUserStore());
 
 const router = useRouter();
 
@@ -27,14 +25,12 @@ function signOut() {
   isLoggedIn.value = false;
   localStorage.removeItem("currentUser");
   router.replace("/");
-  router.go(0);
 }
 </script>
 
 <template>
   <div class="flex flex-row">
     <div
-      v-auto-animate
       id="sidebar"
       class="relative md:w-1/4 lg:w-1/5 p-4 h-screen text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-4)] dark:bg-[var(--color-2)]"
     >
@@ -48,14 +44,14 @@ function signOut() {
       <div class="text-xl mt-3">Home:</div>
       <div class="mt-3 flex flex-col gap-2 my-3">
         <RouterLink
-          to="home"
+          to="/home"
           class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-1)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-chart-simple"></i>
           Dashboard</RouterLink
         >
         <RouterLink
-          to="profile"
+          to="/profile"
           class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-2)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-person"></i>
@@ -79,12 +75,11 @@ function signOut() {
           v-auto-animate
           v-for="project in projects"
           :key="project.project_id"
-          @click="currentProject = project"
           class="flex flex-row gap-2 items-center"
         >
           <RouterLink
-            to="/project"
-            class="text-lg hover:font-bold cursor-pointer w-full px-2 py-1 rounded-lg hover:bg-[var(--color-1)] dark:hover:bg-[var(--color-5)]"
+            :to="`/project/${project.project_id}`"
+            class="text-lg hover:font-bold cursor-pointer w-full py-1 pl-4 rounded-lg hover:bg-[var(--color-5)] dark:hover:bg-[var(--color-1)]"
           >
             {{ project.title }}
           </RouterLink>
@@ -92,7 +87,7 @@ function signOut() {
         <div v-if="projects.length == 0" class="text-md">No projects :(</div>
         <div class="w-full h-1 bg-black rounded-3xl"></div>
         <RouterLink
-          to="create"
+          to="/create"
           class="m-0 w-full text-left text-lg p-1 px-2 rounded-lg hover:bg-[var(--button-bg-color-2)] hover:text-white"
         >
           Create a new project!

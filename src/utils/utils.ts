@@ -35,7 +35,7 @@ export async function signin(
       }
     });
   if (status !== 200) {
-    return status;
+    throw status;
   } else {
     return user;
   }
@@ -74,7 +74,7 @@ export async function signup(
       }
     });
   if (status !== 200) {
-    return status;
+    throw status;
   } else {
     return user;
   }
@@ -101,10 +101,38 @@ export async function getUserProjects(
     });
 
   if (status !== 200) {
-    return status;
+    throw status;
   } else {
     return projects;
   }
+}
+
+export async function getProjectById(user_id: string, project_id: string) {
+  let project: Project = {
+    project_id: "",
+    user_id: "",
+    title: "",
+    description: "",
+    created_at: "",
+    deadline: "",
+  };
+
+  await axios
+    .get(apiUrl + "projects/" + user_id + "/" + project_id)
+    .then((response) => {
+      project = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        if (error.response.status === 404) {
+          throw 404;
+        }
+      } else {
+        throw 500;
+      }
+    });
+
+  return project;
 }
 
 export async function createNewProject(
@@ -140,7 +168,7 @@ export async function createNewProject(
     });
 
   if (status !== 200) {
-    return status;
+    throw status;
   } else {
     return project;
   }
@@ -159,7 +187,7 @@ export async function deleteProject(
       }
     });
 
-  return status;
+  throw status;
 }
 
 export async function getTasksOfProject(user_id: string, project_id: string) {
@@ -176,7 +204,7 @@ export async function getTasksOfProject(user_id: string, project_id: string) {
       }
     });
   if (status !== 200) {
-    return status;
+    throw status;
   }
   return tasks;
 }
@@ -218,7 +246,7 @@ export async function addTaskToProject(
     });
 
   if (status !== 200) {
-    return status;
+    throw status;
   } else {
     return task;
   }
@@ -254,7 +282,7 @@ export async function completeTask(
     });
 
   if (status !== 200) {
-    return status;
+    throw status;
   }
   return task;
 }
@@ -272,7 +300,7 @@ export async function deleteTask(
         status = error.response.status;
       }
     });
-  return status;
+  throw status;
 }
 
 export async function getAllUserTasks(user_id: string): Promise<Task[]> {
@@ -283,7 +311,7 @@ export async function getAllUserTasks(user_id: string): Promise<Task[]> {
       tasks = response.data;
     })
     .catch((error) => {
-      return error.response.status;
+      throw error.response.status;
     });
   return tasks;
 }
