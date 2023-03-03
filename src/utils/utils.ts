@@ -223,3 +223,67 @@ export async function addTaskToProject(
     return task;
   }
 }
+
+export async function completeTask(
+  user_id: string,
+  project_id: string,
+  task_id: string
+) {
+  let status = 200;
+  let task: Task = {
+    task_id: "",
+    project_id: "",
+    title: "",
+    description: "",
+    due_date: "",
+    priority: 0,
+    completed: 0,
+  };
+
+  await axios
+    .put(apiUrl + "tasks/" + user_id + "/" + project_id + "/" + task_id, {
+      completed: 1,
+    })
+    .then((response) => {
+      task = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+
+  if (status !== 200) {
+    return status;
+  }
+  return task;
+}
+
+export async function deleteTask(
+  user_id: string,
+  project_id: string,
+  task_id: string
+) {
+  let status = 200;
+  await axios
+    .delete(apiUrl + "tasks/" + user_id + "/" + project_id + "/" + task_id)
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+  return status;
+}
+
+export async function getAllUserTasks(user_id: string): Promise<Task[]> {
+  let tasks: Task[] = [];
+  await axios
+    .get(apiUrl + "tasks/" + user_id)
+    .then((response) => {
+      tasks = response.data;
+    })
+    .catch((error) => {
+      return error.response.status;
+    });
+  return tasks;
+}

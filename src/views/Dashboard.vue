@@ -36,7 +36,7 @@ function signOut() {
     <div
       v-auto-animate
       id="sidebar"
-      class="relative md:w-1/4 lg:w-1/5 p-4 h-screen text-[var(--color-4)] dark:text-[var(--color-2)] bg-[var(--color-2)] dark:bg-[var(--color-4)]"
+      class="relative md:w-1/4 lg:w-1/5 p-4 h-screen text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-4)] dark:bg-[var(--color-2)]"
     >
       <div class="text-2xl">
         Hi

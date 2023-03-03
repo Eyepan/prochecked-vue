@@ -15,17 +15,17 @@ if (isLoggedIn.value) {
 </script>
 
 <template>
-  <DarkMode class="absolute float-right" />
-  <div class="">
-    <router-view v-slot="{ Component }">
-      <transition name="fade" mode="out-in">
-        <component :is="Component" />
+  <div>
+    <DarkMode class="absolute float-right" />
+    <router-view v-slot="{ Component, route }">
+      <transition name="fade">
+        <component :is="Component" :key="route.path" />
       </transition>
     </router-view>
   </div>
 </template>
 
-<style scoped>
+<style>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 150ms ease-in-out;
