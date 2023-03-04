@@ -58,7 +58,7 @@ function signOut() {
           Profile
         </RouterLink>
         <RouterLink
-          to="settings"
+          to="/settings"
           class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--color-1)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-gear"></i>
