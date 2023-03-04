@@ -297,10 +297,9 @@ export async function deleteTask(
     .delete(apiUrl + "tasks/" + user_id + "/" + project_id + "/" + task_id)
     .catch((error) => {
       if (error.response) {
-        status = error.response.status;
+        throw error.response.status;
       }
     });
-  throw status;
 }
 
 export async function getAllUserTasks(user_id: string): Promise<Task[]> {

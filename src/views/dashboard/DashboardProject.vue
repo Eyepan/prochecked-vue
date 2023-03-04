@@ -3,22 +3,28 @@ import {
   addTaskToProject,
   getProjectById,
   getTasksOfProject,
+  completeTask,
+  deleteTask,
 } from "@/utils/utils";
+
+import Spinner from "@/components/Spinner.vue";
 import { onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import type Task from "@/models/task.model";
 import type Project from "@/models/project.model";
 import { vAutoAnimate } from "@formkit/auto-animate";
+import { Chart, type ChartConfiguration } from "chart.js/auto";
+
+const loading = ref(false);
 
 const { currentUser } = storeToRefs(useUserStore());
 const route = useRoute();
-const router = useRouter();
 const tasks = ref<Task[]>([]);
 const completedTasks = ref<Task[]>([]);
 const incompleteTasks = ref<Task[]>([]);
-const project = ref<Project>();
+const currentProject = ref<Project>();
 const showAddTaskModal = ref(false);
 
 const priorities = ["Low", "Medium", "High", "Do it right now"];
@@ -29,13 +35,14 @@ const taskPriority = ref(0);
 const taskDueDate = ref("");
 
 onMounted(async () => {
+  loading.value = true;
   let currentProjectId: string;
   if (typeof route.params.id === "string") {
     currentProjectId = route.params.id;
   } else {
     throw "Invalid project id";
   }
-  project.value = await getProjectById(
+  currentProject.value = await getProjectById(
     currentUser.value.user_id,
     currentProjectId
   );
@@ -43,57 +50,28 @@ onMounted(async () => {
     currentUser.value.user_id,
     currentProjectId
   );
-  completedTasks.value = tasks.value.filter((task) => task.completed);
-  incompleteTasks.value = tasks.value.filter((task) => !task.completed);
-  // sort tasks by priority
-  completedTasks.value.sort((a, b) => {
-    if (a.priority > b.priority) {
-      return -1;
-    } else if (a.priority < b.priority) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-  incompleteTasks.value.sort((a, b) => {
-    if (a.priority > b.priority) {
-      return -1;
-    } else if (a.priority < b.priority) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+  loading.value = false;
+  const myChart = new Chart(
+    document.getElementById("myChart") as HTMLCanvasElement,
+    config
+  );
 });
 
 watch(tasks, () => {
   completedTasks.value = tasks.value.filter((task) => task.completed);
+  completedTasks.value.sort((a, b) => b.priority - a.priority);
   incompleteTasks.value = tasks.value.filter((task) => !task.completed);
-  completedTasks.value.sort((a, b) => {
-    if (a.priority > b.priority) {
-      return -1;
-    } else if (a.priority < b.priority) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
-  incompleteTasks.value.sort((a, b) => {
-    if (a.priority > b.priority) {
-      return -1;
-    } else if (a.priority < b.priority) {
-      return 1;
-    } else {
-      return 0;
-    }
-  });
+  incompleteTasks.value.sort((a, b) => b.priority - a.priority);
 });
 
+async function handleDeleteProject() {}
+
 async function handleAddTask() {
-  if (project.value) {
+  loading.value = true;
+  if (currentProject.value) {
     await addTaskToProject(
       currentUser.value.user_id,
-      project.value.project_id,
+      currentProject.value.project_id,
       taskTitle.value,
       taskDescription.value,
       taskDueDate.value,
@@ -102,7 +80,7 @@ async function handleAddTask() {
     );
     tasks.value = await getTasksOfProject(
       currentUser.value.user_id,
-      project.value.project_id
+      currentProject.value.project_id
     );
   }
   taskTitle.value = "";
@@ -110,7 +88,62 @@ async function handleAddTask() {
   taskDueDate.value = "";
   taskPriority.value = 0;
   showAddTaskModal.value = false;
+  loading.value = false;
 }
+
+async function handleCompleteTask(task_id: string) {
+  loading.value = true;
+  if (currentProject.value) {
+    await completeTask(
+      currentUser.value.user_id,
+      currentProject.value?.project_id,
+      task_id
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  loading.value = false;
+}
+async function handleDeleteTask(task_id: string) {
+  loading.value = true;
+  if (currentProject.value) {
+    await deleteTask(
+      currentUser.value.user_id,
+      currentProject.value?.project_id,
+      task_id
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  loading.value = false;
+}
+const config: ChartConfiguration<"pie", number[], string> = {
+  type: "pie",
+  data: {
+    labels: ["Completed", "Incomplete"],
+    datasets: [
+      {
+        label: "Tasks",
+        data: [completedTasks.value.length, incompleteTasks.value.length],
+        backgroundColor: ["#00ff00", "#ff0000"],
+        hoverOffset: 4,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+      },
+    },
+  },
+};
 </script>
 
 <template>
@@ -127,7 +160,9 @@ async function handleAddTask() {
         @click="showAddTaskModal = false"
         class="absolute top-10 right-10 fa-solid fa-close fa-xl hover:text-red-500"
       ></i>
-      <div class="text-xl">Add task to {{ project && project.title }}</div>
+      <div class="text-xl">
+        Add task to {{ currentProject && currentProject.title }}
+      </div>
       <input
         type="text"
         v-model="taskTitle"
@@ -135,6 +170,9 @@ async function handleAddTask() {
         placeholder="Task title"
         required
       />
+      <div v-if="taskTitle.length > 20" class="text-red-500">
+        Task title shouldn't exceed 20 characters
+      </div>
       <input
         type="text"
         class="p-2 w-5/6 h-20"
@@ -160,7 +198,13 @@ async function handleAddTask() {
           <input id="duedate" type="date" v-model="taskDueDate" class="p-2" />
         </div>
       </div>
-      <button type="submit" class="btn-primary m-0 w-5/6">Add Task</button>
+      <button
+        type="submit"
+        :disabled="taskTitle.length > 20"
+        class="btn-primary m-0 w-5/6"
+      >
+        Add Task
+      </button>
     </form>
   </div>
   <div
@@ -170,67 +214,114 @@ async function handleAddTask() {
       opacity: showAddTaskModal ? 0.2 : 1,
     }"
   >
+    <Spinner v-if="loading" />
     <!-- title section -->
     <div class="flex flex-row items-center justify-between py-2">
       <div class="">
-        <div class="text-3xl">{{ project ? project.title : "Loading..." }}</div>
+        <div class="text-3xl">
+          {{ currentProject ? currentProject.title : "Loading..." }}
+        </div>
         <div class="text-l">
-          {{ project ? project.description : "Loading..." }}
+          {{ currentProject ? currentProject.description : "Loading..." }}
         </div>
       </div>
-      <div class="text-right">
-        <div class="text-l">
-          Created on
-          {{ project ? project.created_at.substring(0, 10) : "Loading..." }}
-        </div>
-        <div class="text-l">
-          Deadline at
-          {{ project ? project.deadline.substring(0, 10) : "Loading..." }}
-        </div>
+      <div class="">
+        <i
+          class="fa-solid fa-trash fa-xl hover:text-red-500 cursor-pointer"
+          @click="handleDeleteProject()"
+        ></i>
       </div>
     </div>
 
     <!-- tasks section -->
     <div class="h-1 w-full bg-white"></div>
-    <div class="text-2xl">Tasks</div>
-    <div class="text-l">
-      {{ tasks ? tasks.length : "Loading..." }} tasks in this project
+    <div class="flex items-center justify-between">
+      <div class="">
+        <div class="text-2xl">Tasks</div>
+        <div class="text-l">
+          {{ tasks ? tasks.length : "Loading..." }} tasks in this project
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-l">
+          Created on
+          {{
+            currentProject
+              ? currentProject.created_at.substring(0, 10)
+              : "Loading..."
+          }}
+        </div>
+        <div class="text-l">
+          Deadline at
+          {{
+            currentProject
+              ? currentProject.deadline.substring(0, 10)
+              : "Loading..."
+          }}
+        </div>
+      </div>
     </div>
 
     <!-- task list -->
     <div class="grid grid-cols-2 gap-4">
-      <div class="outline p-4 rounded-xl mt-4 overflow-hidden">
+      <div class="outline p-4 rounded-xl mt-4">
         <div class="text-xl">Completed Tasks</div>
         <div
           v-for="task in completedTasks"
           :style="{ color: task.completed ? '#00ff00' : '#ff0000' }"
         >
-          <div class="text-l">
-            {{ task.title }}
-          </div>
-          <div class="text-xs">
-            {{ task.description }}
-            {{ priorities[task.priority] }}
-            {{ task.due_date.substring(0, 10) }}
-            {{ task.completed ? "Completed" : "Not completed" }}
+          <div class="flex gap-3 justify-between">
+            <div class="">
+              <div class="text-l w-5/6">
+                {{ task.title }}
+              </div>
+              <div class="text-xs">
+                {{ task.description }}
+                {{ priorities[task.priority] }}
+                {{ task.due_date.substring(0, 10) }}
+                {{ task.completed ? "Completed" : "Not completed" }}
+              </div>
+            </div>
+            <div
+              @click="handleDeleteTask(task.task_id)"
+              class="text-center cursor-pointer rounded-xl hover:bg-[var(--color-2)]"
+            >
+              <i class="fa-solid fa-trash fa-xl"></i>
+            </div>
           </div>
         </div>
       </div>
-      <div class="flex flex-col outline p-4 rounded-xl mt-4 overflow-hidden">
+      <div class="flex flex-col outline p-4 rounded-xl mt-4">
         <div class="text-xl">Tasks To Do</div>
         <div
           class="py-1"
           v-for="task in incompleteTasks"
           :style="{ color: task.completed ? '#00ff00' : '#ff0000' }"
         >
-          <div class="text-l">
-            {{ task.title }}
-          </div>
-          <div class="text-xs">
-            <!-- {{ task.description }} -->
-            {{ priorities[task.priority] }}
-            {{ task.due_date.substring(0, 10) }}
-            {{ task.completed ? "Completed" : "Not completed" }}
+          <div class="flex flex-row gap-3 justify-between">
+            <div class="w-5/6">
+              <div class="text-l">
+                {{ task.title }}
+              </div>
+              <div class="text-xs">
+                <!-- {{ task.description }} -->
+                {{ priorities[task.priority] }}
+                {{ task.due_date.substring(0, 10) }}
+                {{ task.completed ? "Completed" : "Not completed" }}
+              </div>
+            </div>
+            <div
+              @click="handleCompleteTask(task.task_id)"
+              class="text-center cursor-pointer rounded-xl hover:bg-[var(--color-2)]"
+            >
+              <i class="fa-solid fa-check fa-xl"></i>
+            </div>
+            <div
+              @click="handleDeleteTask(task.task_id)"
+              class="text-center cursor-pointer rounded-xl hover:bg-[var(--color-2)]"
+            >
+              <i class="fa-solid fa-trash fa-xl"></i>
+            </div>
           </div>
         </div>
         <div
@@ -241,7 +332,11 @@ async function handleAddTask() {
         </div>
       </div>
     </div>
-
-    <!-- add task button -->
+    <div class="flex h-1/2 flex-col outline p-4 rounded-xl mt-4">
+      TimeChart
+      <div>
+        <myChart id="myChart" width="200" height="200"></myChart>
+      </div>
+    </div>
   </div>
 </template>
