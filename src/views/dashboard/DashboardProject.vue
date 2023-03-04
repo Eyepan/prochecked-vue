@@ -232,8 +232,16 @@
         TasksChart
         <PieChart
           :data="[
-            { color: 'var(--color-3)', value: completedTasks.length },
-            { color: 'var(--color-2)', value: incompleteTasks.length },
+            {
+              color: 'var(--color-3)',
+              value: completedTasks.length,
+              label: 'Completed',
+            },
+            {
+              color: 'var(--color-2)',
+              value: incompleteTasks.length,
+              label: 'Not Completed',
+            },
           ]"
           v-if="tasks.length > 0"
           class="max-h-96"

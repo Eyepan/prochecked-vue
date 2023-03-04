@@ -7,12 +7,22 @@
         :key="index"
         :d="item.path"
         :fill="item.color"
-        style="
-           {
-            transition: fill 0.5s;
-          }
-        "
-      />
+        :style="{
+          transition: 'fill 0.5s',
+        }"
+      ></path>
+
+      <text
+        v-for="(item, index) in items"
+        :key="'label-' + index"
+        :x="item.labelX"
+        :y="item.labelY"
+        font-size="5px"
+        fill="white"
+        text-anchor="middle"
+      >
+        {{ item.value > 0.05 ? item.label : "" }}
+      </text>
     </g>
   </svg>
 </template>
@@ -21,12 +31,16 @@
 import { computed } from "vue";
 
 interface PieChartItem {
+  value: number;
   path: string;
   color: string;
+  label: string;
+  labelX: number;
+  labelY: number;
 }
 
 interface PieChartProps {
-  data: Array<{ value: number; color: string }>;
+  data: Array<{ value: number; color: string; label: string }>;
 }
 
 const props = defineProps<PieChartProps>();
@@ -39,8 +53,12 @@ const items = computed<PieChartItem[]>(() => {
     const percentage = item.value / total;
     const endAngle = startAngle + percentage * 360;
     const data: PieChartItem = {
+      value: percentage,
       path: getSlicePath(startAngle, endAngle),
       color: item.color,
+      label: item.label,
+      labelX: getLabelX(startAngle, endAngle),
+      labelY: getLabelY(startAngle, endAngle),
     };
     startAngle = endAngle;
     return data;
@@ -61,5 +79,19 @@ function getSlicePath(startAngle: number, endAngle: number): string {
     `z`,
   ];
   return pathData.join(" ");
+}
+
+function getLabelX(startAngle: number, endAngle: number): number {
+  const radius = 30;
+  const angle = (startAngle + endAngle) / 2;
+  const x = Math.cos((angle * Math.PI) / 180) * radius;
+  return x;
+}
+
+function getLabelY(startAngle: number, endAngle: number): number {
+  const radius = 30;
+  const angle = (startAngle + endAngle) / 2;
+  const y = Math.sin((angle * Math.PI) / 180) * radius;
+  return y;
 }
 </script>

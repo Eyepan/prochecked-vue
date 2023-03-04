@@ -40,8 +40,16 @@ onMounted(async () => {
   <div class="">
     <PieChart
       :data="[
-        { value: completedTasks.length, color: 'var(--color-3)' },
-        { value: incompleteTasks.length, color: 'var(--color-2)' },
+        {
+          value: completedTasks.length,
+          color: 'var(--color-3)',
+          label: 'Completed',
+        },
+        {
+          value: incompleteTasks.length,
+          color: 'var(--color-2)',
+          label: 'Not Completed',
+        },
       ]"
     />
   </div>
