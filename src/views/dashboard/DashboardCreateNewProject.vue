@@ -46,10 +46,10 @@ async function handleSubmit() {
     :style="{ opacity: loading ? '1' : '0' }"
     class="float-right"
   />
-  <div class="text-3xl">Create a new project!</div>
+  <div class="text-5xl font-black mb-5">Create a new project!</div>
   <div class="text-l">
     It's always exciting creating a new project. Just give us some details and
-    we will do the leg work for you
+    we will do the leg work for you.
   </div>
 
   <form

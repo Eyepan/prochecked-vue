@@ -32,6 +32,7 @@ watch(tasks, () => {
 </script>
 
 <template>
+  <div class="text-7xl font-black mb-5">Dashboard</div>
   <div class="text-2xl lg:text-4xl">
     {{ getRandomAffirmation() }}
   </div>

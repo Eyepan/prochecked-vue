@@ -37,10 +37,11 @@ const currentProject = ref<Project>({
   deadline: "",
 });
 const showAddTaskModal = ref(false);
+const showDeleteProjectModal = ref(false);
 const priorities = ["Low", "Medium", "High", "Do it right now"];
 const taskTitle = ref("");
 const taskDescription = ref("");
-const taskPriority = ref(0);
+const taskPriority = ref(1);
 const taskDueDate = ref("");
 const dataToChart = ref<Array<{ value: number; color: string; label: string }>>(
   []
@@ -65,7 +66,29 @@ onMounted(async () => {
   taskDueDate.value = new Date(currentProject.value.deadline)
     .toISOString()
     .split("T")[0];
-
+  // set placeholder loading data
+  dataToChart.value = [
+    {
+      value: 1,
+      color: "#dddddd",
+      label: "Urgent",
+    },
+    {
+      value: 1,
+      color: "#999999",
+      label: "High",
+    },
+    {
+      value: 1,
+      color: "#777777",
+      label: "Medium",
+    },
+    {
+      value: 1,
+      color: "#111111",
+      label: "Low",
+    },
+  ];
   loading.value = false;
 });
 
@@ -76,24 +99,24 @@ watch(tasks, () => {
   incompleteTasks.value.sort((a, b) => b.priority - a.priority);
   dataToChart.value = [
     {
-      value: tasks.value.filter((task) => task.priority === 3).length,
-      color: "#ff0000",
-      label: "High Priority",
+      value: incompleteTasks.value.filter((task) => task.priority === 3).length,
+      color: "#dddddd",
+      label: "Urgent",
     },
     {
-      value: tasks.value.filter((task) => task.priority === 2).length,
-      color: "#dd0000",
-      label: "High Priority",
+      value: incompleteTasks.value.filter((task) => task.priority === 2).length,
+      color: "#999999",
+      label: "High",
     },
     {
-      value: tasks.value.filter((task) => task.priority === 1).length,
-      color: "#ddcc00",
-      label: "Medium Priority",
+      value: incompleteTasks.value.filter((task) => task.priority === 1).length,
+      color: "#777777",
+      label: "Medium",
     },
     {
-      value: tasks.value.filter((task) => task.priority === 0).length,
-      color: "#00dd00",
-      label: "Low Priority",
+      value: incompleteTasks.value.filter((task) => task.priority === 0).length,
+      color: "#111111",
+      label: "Low",
     },
   ];
 });
@@ -106,7 +129,7 @@ async function handleDeleteProject() {
     );
     projects.value = await getUserProjects(currentUser.value.user_id);
   }
-  router.replace("/dashboard");
+  await router.replace("/dashboard");
 }
 
 async function handleAddTask() {
@@ -128,7 +151,7 @@ async function handleAddTask() {
   }
   taskTitle.value = "";
   taskDescription.value = "";
-  taskPriority.value = 0;
+  taskPriority.value = 1;
   taskDueDate.value = new Date(currentProject.value.deadline)
     .toISOString()
     .split("T")[0];
@@ -209,8 +232,8 @@ async function handleDeleteTask(task_id: string) {
         placeholder="Task title"
         required
       />
-      <div v-if="taskTitle.length > 20" class="text-red-500">
-        Task title shouldn't exceed 20 characters
+      <div v-if="taskTitle.length > 40" class="text-red-500">
+        Task title shouldn't exceed 40 characters
       </div>
       <textarea
         type="text"
@@ -233,9 +256,9 @@ async function handleDeleteTask(task_id: string) {
           </select>
         </div>
         <div class="flex flex-col items-center justify-center gap-2">
-          <label for="duedate">Due Date</label>
+          <label for="due date">Due Date</label>
           <input
-            id="duedate"
+            id="due date"
             type="date"
             :min="new Date().toISOString().split('T')[0]"
             :max="
@@ -250,13 +273,43 @@ async function handleDeleteTask(task_id: string) {
       </div>
       <button
         type="submit"
-        :disabled="taskTitle.length > 20"
+        :disabled="taskTitle.length > 40"
         class="btn-primary m-0 w-5/6"
       >
         Add Task
       </button>
     </form>
   </div>
+  <div
+    v-if="showDeleteProjectModal"
+    class="flex flex-col gap-2 text-center items-center justify-center absolute w-screen h-screen top-0 bottom-0 left-0 right-0 bg-red-500 z-50"
+  >
+    <i class="fa-solid fa-warning text-9xl"></i>
+    <div class="text-3xl">
+      Do you really want to delete
+      <div class="text-5xl font-black">{{ currentProject.title }}</div>
+    </div>
+    <div class="flex flex-row gap-2">
+      <button
+        class="btn-primary bg-red-700 p-4 px-10"
+        @click="
+          handleDeleteProject();
+          showDeleteProjectModal = false;
+        "
+        :disabled="loading"
+      >
+        Yes
+      </button>
+      <button
+        class="btn-primary bg-green-700 p-4 px-10"
+        @click="showDeleteProjectModal = false"
+        :disabled="loading"
+      >
+        No
+      </button>
+    </div>
+  </div>
+
   <div
     v-auto-animate
     class="w-full"
@@ -268,7 +321,7 @@ async function handleDeleteTask(task_id: string) {
     <!-- title section -->
     <div class="flex flex-row items-center justify-between py-2">
       <div class="">
-        <div class="text-3xl">
+        <div class="text-6xl font-black">
           {{ currentProject ? currentProject.title : "Loading..." }}
         </div>
         <div class="text-l">
@@ -278,7 +331,7 @@ async function handleDeleteTask(task_id: string) {
       <div class="">
         <i
           class="fa-solid fa-trash fa-xl hover:text-red-500 cursor-pointer"
-          @click="handleDeleteProject()"
+          @click="showDeleteProjectModal = true"
         ></i>
       </div>
     </div>
@@ -349,9 +402,9 @@ async function handleDeleteTask(task_id: string) {
     </div>
 
     <!-- task list -->
-    <div class="grid grid-cols-2 gap-4">
-      <div class="outline p-4 rounded-xl mt-4">
-        <div class="text-xl">Completed Tasks</div>
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+      <div class="outline p-4 rounded-xl">
+        <div class="text-2xl">Completed Tasks</div>
         <div
           v-for="task in completedTasks"
           :style="{ color: task.completed ? '#00ff00' : '#ff0000' }"
@@ -367,23 +420,25 @@ async function handleDeleteTask(task_id: string) {
                 {{ task.completed ? "Completed" : "Not completed" }}
               </div>
             </div>
-            <div
-              @click="handleIncompleteTask(task.task_id)"
-              class="text-center cursor-pointer rounded-xl"
-            >
-              <i class="fa-solid fa-undo fa-xl"></i>
-            </div>
-            <div
-              @click="handleDeleteTask(task.task_id)"
-              class="text-center cursor-pointer rounded-xl"
-            >
-              <i class="fa-solid fa-trash fa-xl hover:text-red-500"></i>
+            <div class="flex flex-row gap-3 justify-between">
+              <div
+                @click="handleIncompleteTask(task.task_id)"
+                class="text-center cursor-pointer rounded-xl"
+              >
+                <i class="fa-solid fa-undo fa-xl"></i>
+              </div>
+              <div
+                @click="handleDeleteTask(task.task_id)"
+                class="text-center cursor-pointer rounded-xl"
+              >
+                <i class="fa-solid fa-trash fa-xl hover:text-red-500"></i>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="flex flex-col outline p-4 rounded-xl mt-4">
-        <div class="text-xl">Tasks To Do</div>
+      <div class="flex flex-col outline p-4 rounded-xl">
+        <div class="text-2xl">Tasks To Do</div>
         <div
           class="py-1"
           v-for="task in incompleteTasks"
@@ -423,27 +478,22 @@ async function handleDeleteTask(task_id: string) {
         </div>
       </div>
       <div class="flex-row items-center justify-center outline p-4 rounded-xl">
-        <div class="text-xl">Tasks Priority Analysis</div>
-        <PieChart
-          :data="dataToChart"
-          v-if="tasks.length > 0"
-          class="max-h-96"
-          :values="[completedTasks.length, incompleteTasks.length]"
-          :colors="['#00ff00', '#ff0000']"
-        />
+        <div class="text-2xl">Tasks Priority Analysis</div>
+        <PieChart v-if="tasks.length > 0" :data="dataToChart" />
         <div v-else class="text-m">
           No tasks currently available for project.
           <div class="text-xs">Add one to see the task chart.</div>
         </div>
       </div>
-      <div class="flex-row items-center justify-center outline p-4 rounded-xl">
-        <div class="text-xl">Task Descriptions</div>
-        <div
-          class="text-m"
-          v-for="task in tasks"
-          :style="{ color: task.completed ? 'var(--color-4)' : 'white' }"
-        >
-          {{ task.title }}: {{ task.description ? task.description : "None" }}
+      <div
+        class="flex-row items-center justify-center outline p-4 rounded-xl lg:col-span-3"
+      >
+        <div class="text-2xl">Task Descriptions</div>
+        <div class="text-lg" v-for="task in completedTasks">
+          {{ task.title }}:
+          <div class="text-sm">
+            {{ task.description ? task.description : "None" }}
+          </div>
         </div>
       </div>
     </div>

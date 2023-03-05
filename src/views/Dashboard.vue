@@ -32,7 +32,7 @@ function signOut() {
   <div class="flex flex-row">
     <div
       id="sidebar"
-      class="relative md:w-1/4 lg:w-1/5 p-4 h-screen text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-4)] dark:bg-[var(--color-2)]"
+      class="relative md:w-1/4 lg:w-1/6 p-4 h-screen text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-4)] dark:bg-[var(--color-2)]"
     >
       <div class="text-2xl">
         Hi
@@ -101,8 +101,8 @@ function signOut() {
       </button>
     </div>
 
-    <section id="content" class="h-screen md:w-3/4 lg:w-4/5 overflow-scroll">
-      <router-view></router-view>
+    <section id="content" class="h-screen md:w-3/4 lg:w-5/6 overflow-scroll">
+      <router-view />
     </section>
   </div>
 </template>

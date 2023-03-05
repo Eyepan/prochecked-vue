@@ -1,32 +1,3 @@
-<template>
-  <svg viewBox="0 0 100 100">
-    <g transform="translate(50,50)">
-      <circle r="49" fill="#ccc5b9aa" />
-      <path
-        v-for="(item, index) in items"
-        :key="index"
-        :d="item.path"
-        :fill="item.color"
-        :style="{
-          transition: 'fill 0.5s',
-        }"
-      ></path>
-
-      <text
-        v-for="(item, index) in items"
-        :key="'label-' + index"
-        :x="item.labelX"
-        :y="item.labelY"
-        font-size="5px"
-        fill="white"
-        text-anchor="middle"
-      >
-        {{ item.value > 0.05 ? item.label : "" }}
-      </text>
-    </g>
-  </svg>
-</template>
-
 <script setup lang="ts">
 import { computed } from "vue";
 
@@ -95,3 +66,29 @@ function getLabelY(startAngle: number, endAngle: number): number {
   return y;
 }
 </script>
+
+<template>
+  <svg viewBox="0 0 100 100">
+    <g transform="translate(50,50)">
+      <circle r="49" fill="#ccc5b9aa" class="hover:fill-white" />
+      <path
+        v-for="(item, index) in items"
+        :key="index"
+        :d="item.path"
+        :fill="item.color"
+      ></path>
+
+      <text
+        v-for="(item, index) in items"
+        :key="'label-' + index"
+        :x="item.labelX"
+        :y="item.labelY"
+        font-size="5px"
+        fill="white"
+        text-anchor="middle"
+      >
+        {{ item.value > 0.05 ? item.label : "" }}
+      </text>
+    </g>
+  </svg>
+</template>
