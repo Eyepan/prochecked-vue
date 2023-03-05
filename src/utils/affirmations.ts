@@ -28,26 +28,35 @@ export const affirmations = [
   "You're an inspiration.",
   "Your life is already a miracle of chance waiting for you to shape its destiny.",
   "Your life is about to be incredible.",
-  "Nothing is impossible. The word itself says 'I’m possible!'.",
+  "Nothing is impossible. The word itself says 'I'm possible!'.",
   "Failure is just another way to learn how to do something right.",
   "I give myself permission to do what is right for me.",
   "You can do it.",
   "It is not a sprint, it is a marathon. One step at a time.",
   "Success is the progressive realization of a worthy goal.",
-  "People with goals succeed because they know where they’re going.",
+  "People with goals succeed because they know where they're going.",
   "All you need is the plan, the roadmap, and the courage to press on to your destination.",
   "The opposite of courage in our society is not cowardice... it is conformity.",
-  "Whenever we’re afraid, it’s because we don’t know enough. If we understood enough, we would never be afraid.",
+  "Whenever we're afraid, it's because we don't know enough. If we understood enough, we would never be afraid.",
   "The past does not equal the future.",
   "The path to success is to take massive, determined action.",
-  "It’s what you practice in private that you will be rewarded for in public.",
+  "It's what you practice in private that you will be rewarded for in public.",
   "Small progress is still progress.",
   "Don't worry if you find flaws in your past creations, it's because you've evolved.",
   "Starting is the most difficult step - but you can do it.",
   "Don't forget to enjoy the journey.",
   "It's not a mistake, it's a learning opportunity.",
+  "I am courageous enough to face and conquer my fears.",
+  "I am confident in my self-worth.",
+  "I have the skills and knowledge to make the best decisions for my career.",
+  "I am the best at what I do. I create exceptional results for my organization.",
+  "I am focused and passionate about my goals and career.",
+  "I am living my life to the fullest.",
 ];
-
+let count = 0;
 export function getRandomAffirmation() {
   return affirmations[Math.floor(Math.random() * affirmations.length)];
+}
+export function getIncrementalAffirmation() {
+  return affirmations[count++ % affirmations.length];
 }

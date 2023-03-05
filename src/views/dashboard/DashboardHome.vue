@@ -7,7 +7,7 @@ import type Task from "@/models/task.model";
 import { getAllUserTasks } from "@/utils/utils";
 import PieChart from "@/components/PieChart.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
-import { getRandomAffirmation } from "@/utils/affirmations";
+import { getIncrementalAffirmation } from "@/utils/affirmations";
 import ErrorDisplayer from "@/components/ErrorDisplayer.vue";
 
 const { projects, currentUser } = storeToRefs(useUserStore());
@@ -41,7 +41,7 @@ watch(tasks, () => {
   <ErrorDisplayer v-if="invalidTaskId" error="Invalid Task ID" />
   <div class="text-7xl font-black mb-5">Dashboard</div>
   <div class="text-2xl lg:text-4xl">
-    {{ getRandomAffirmation() }}
+    {{ getIncrementalAffirmation() }}
   </div>
   <div
     v-if="projects.length > 0"

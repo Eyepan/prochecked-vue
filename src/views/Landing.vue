@@ -27,7 +27,7 @@ import { RouterLink } from "vue-router";
       <a
         href="https://github.com/eyepan/prochecked-vue"
         target="_blank"
-        class="mt-20 m-2 p-4 rounded-xl bg-white dark:bg-black hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
+        class="mt-20 m-2 p-4 rounded-xl bg-black text-white hover:bg-white hover:text-black"
       >
         <i class="fa fa-github p-1"></i>
         View on GitHub
