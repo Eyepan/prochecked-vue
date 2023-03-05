@@ -7,18 +7,23 @@ import type Task from "@/models/task.model";
 import { getAllUserTasks } from "@/utils/utils";
 import PieChart from "@/components/PieChart.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import { getRandomAffirmation } from "@/utils/affirmations";
 
 const { projects, currentUser } = storeToRefs(useUserStore());
 const tasks = ref<Task[]>([]);
 const completedTasks = ref<Task[]>([]);
 const incompleteTasks = ref<Task[]>([]);
+const priorities = ["Low", "Medium", "High", "Do it right now"];
+const loading = ref(false);
 
 onMounted(async () => {
+  loading.value = true;
   if (currentUser.value) {
     tasks.value = await getAllUserTasks(currentUser.value.user_id);
   }
   completedTasks.value = tasks.value.filter((task) => task.completed);
   incompleteTasks.value = tasks.value.filter((task) => !task.completed);
+  loading.value = true;
 });
 watch(tasks, () => {
   completedTasks.value = tasks.value.filter((task) => task.completed);
@@ -27,20 +32,8 @@ watch(tasks, () => {
 </script>
 
 <template>
-  <div class="flex flex-row justify-between">
-    <div class="">
-      <div class="text-xl">Total tasks to do</div>
-      <div class="text-2xl">{{ incompleteTasks.length }}</div>
-    </div>
-    <div class="text-center">
-      <div class="text-xl">Total tasks done</div>
-      <div class="text-2xl">{{ completedTasks.length }}</div>
-    </div>
-
-    <div class="text-right">
-      <div class="text-xl">Total tasks</div>
-      <div class="text-2xl">{{ tasks.length }}</div>
-    </div>
+  <div class="text-2xl lg:text-4xl">
+    {{ getRandomAffirmation() }}
   </div>
   <div class="grid grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
     <div class="w-full h-full outline rounded-xl p-4">
@@ -173,7 +166,10 @@ watch(tasks, () => {
           :key="task.task_id"
         >
           <div class="flex-col">
-            <div class="text-lg">{{ task.title }}</div>
+            <p class="text-lg inline">
+              {{ task.title }}
+            </p>
+            <p class="text-sm inline">: {{ priorities[task.priority] }}</p>
             <div class="text-sm">
               Project:
               {{

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
-import axios from "axios";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
@@ -12,7 +11,7 @@ const router = useRouter();
 const loading = ref(false);
 const title = ref("");
 const description = ref("");
-const deadline = ref("");
+const deadline = ref(new Date().toISOString().split("T")[0]);
 
 async function handleSubmit() {
   loading.value = true;
@@ -72,7 +71,12 @@ async function handleSubmit() {
       class="p-2 resize-none"
     />
     <div class="text-l">When do you want to finish this project?</div>
-    <input type="date" v-model="deadline" class="p-2" />
+    <input
+      type="date"
+      :min="new Date().toISOString().split('T')[0]"
+      v-model="deadline"
+      class="p-2"
+    />
     <button
       class="btn-primary py-2 mx-0 flex items-center justify-evenly"
       type="submit"

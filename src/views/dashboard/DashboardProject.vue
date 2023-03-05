@@ -1,3 +1,190 @@
+<script setup lang="ts">
+import {
+  addTaskToProject,
+  getProjectById,
+  getTasksOfProject,
+  completeTask,
+  deleteTask,
+  deleteProject,
+  getUserProjects,
+  incompleteTask,
+} from "@/utils/utils";
+
+import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
+import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useUserStore } from "@/stores/appStore";
+import { storeToRefs } from "pinia";
+import type Task from "@/models/task.model";
+import type Project from "@/models/project.model";
+import { vAutoAnimate } from "@formkit/auto-animate";
+import PieChart from "@/components/PieChart.vue";
+import ProgressBar from "@/components/ProgressBar.vue";
+
+const loading = ref(false);
+const router = useRouter();
+const { currentUser, projects } = storeToRefs(useUserStore());
+const route = useRoute();
+const tasks = ref<Task[]>([]);
+const completedTasks = ref<Task[]>([]);
+const incompleteTasks = ref<Task[]>([]);
+const currentProject = ref<Project>({
+  project_id: "",
+  user_id: "",
+  title: "",
+  description: undefined,
+  created_at: "",
+  deadline: "",
+});
+const showAddTaskModal = ref(false);
+const priorities = ["Low", "Medium", "High", "Do it right now"];
+const taskTitle = ref("");
+const taskDescription = ref("");
+const taskPriority = ref(0);
+const taskDueDate = ref("");
+const dataToChart = ref<Array<{ value: number; color: string; label: string }>>(
+  []
+);
+
+onMounted(async () => {
+  loading.value = true;
+  let currentProjectId: string;
+  if (typeof route.params.id === "string") {
+    currentProjectId = route.params.id;
+  } else {
+    throw "Invalid project id";
+  }
+  currentProject.value = await getProjectById(
+    currentUser.value.user_id,
+    currentProjectId
+  );
+  tasks.value = await getTasksOfProject(
+    currentUser.value.user_id,
+    currentProjectId
+  );
+  taskDueDate.value = new Date(currentProject.value.deadline)
+    .toISOString()
+    .split("T")[0];
+
+  loading.value = false;
+});
+
+watch(tasks, () => {
+  completedTasks.value = tasks.value.filter((task) => task.completed);
+  completedTasks.value.sort((a, b) => b.priority - a.priority);
+  incompleteTasks.value = tasks.value.filter((task) => !task.completed);
+  incompleteTasks.value.sort((a, b) => b.priority - a.priority);
+  dataToChart.value = [
+    {
+      value: tasks.value.filter((task) => task.priority === 3).length,
+      color: "#ff0000",
+      label: "High Priority",
+    },
+    {
+      value: tasks.value.filter((task) => task.priority === 2).length,
+      color: "#dd0000",
+      label: "High Priority",
+    },
+    {
+      value: tasks.value.filter((task) => task.priority === 1).length,
+      color: "#ddcc00",
+      label: "Medium Priority",
+    },
+    {
+      value: tasks.value.filter((task) => task.priority === 0).length,
+      color: "#00dd00",
+      label: "Low Priority",
+    },
+  ];
+});
+
+async function handleDeleteProject() {
+  if (currentProject.value) {
+    await deleteProject(
+      currentUser.value.user_id,
+      currentProject.value?.project_id
+    );
+    projects.value = await getUserProjects(currentUser.value.user_id);
+  }
+  router.replace("/dashboard");
+}
+
+async function handleAddTask() {
+  loading.value = true;
+  if (currentProject.value) {
+    await addTaskToProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id,
+      taskTitle.value,
+      taskDescription.value,
+      taskDueDate.value,
+      taskPriority.value,
+      0
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  taskTitle.value = "";
+  taskDescription.value = "";
+  taskPriority.value = 0;
+  taskDueDate.value = new Date(currentProject.value.deadline)
+    .toISOString()
+    .split("T")[0];
+  showAddTaskModal.value = false;
+  loading.value = false;
+}
+
+async function handleCompleteTask(task_id: string) {
+  loading.value = true;
+  if (currentProject.value) {
+    await completeTask(
+      currentUser.value.user_id,
+      currentProject.value?.project_id,
+      task_id
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  loading.value = false;
+}
+
+async function handleIncompleteTask(task_id: string) {
+  loading.value = true;
+  if (currentProject.value) {
+    await incompleteTask(
+      currentUser.value.user_id,
+      currentProject.value?.project_id,
+      task_id
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  loading.value = false;
+}
+
+async function handleDeleteTask(task_id: string) {
+  loading.value = true;
+  if (currentProject.value) {
+    await deleteTask(
+      currentUser.value.user_id,
+      currentProject.value?.project_id,
+      task_id
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  loading.value = false;
+}
+</script>
+
 <template>
   <div
     v-auto-animate
@@ -25,7 +212,7 @@
       <div v-if="taskTitle.length > 20" class="text-red-500">
         Task title shouldn't exceed 20 characters
       </div>
-      <input
+      <textarea
         type="text"
         class="p-2 w-5/6 h-20"
         v-model="taskDescription"
@@ -175,25 +362,22 @@
                 {{ task.title }}
               </div>
               <div class="text-xs">
-                {{ task.description }}
                 {{ priorities[task.priority] }}
                 {{ task.due_date.substring(0, 10) }}
                 {{ task.completed ? "Completed" : "Not completed" }}
               </div>
             </div>
-            <div class="flex flex-row gap-2">
-              <div
-                class="text-center cursor-pointer rounded-xl"
-                @click="handleIncompleteTask(task.task_id)"
-              >
-                <i class="fa-solid fa-undo"></i>
-              </div>
-              <div
-                @click="handleDeleteTask(task.task_id)"
-                class="text-center cursor-pointer rounded-xl"
-              >
-                <i class="fa-solid fa-trash fa-xl hover:text-red-500"></i>
-              </div>
+            <div
+              @click="handleIncompleteTask(task.task_id)"
+              class="text-center cursor-pointer rounded-xl"
+            >
+              <i class="fa-solid fa-undo fa-xl"></i>
+            </div>
+            <div
+              @click="handleDeleteTask(task.task_id)"
+              class="text-center cursor-pointer rounded-xl"
+            >
+              <i class="fa-solid fa-trash fa-xl hover:text-red-500"></i>
             </div>
           </div>
         </div>
@@ -239,7 +423,7 @@
         </div>
       </div>
       <div class="flex-row items-center justify-center outline p-4 rounded-xl">
-        TasksChart
+        <div class="text-xl">Tasks Priority Analysis</div>
         <PieChart
           :data="dataToChart"
           v-if="tasks.length > 0"
@@ -265,184 +449,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import {
-  addTaskToProject,
-  getProjectById,
-  getTasksOfProject,
-  completeTask,
-  deleteTask,
-  deleteProject,
-  getUserProjects,
-  incompleteTask,
-} from "@/utils/utils";
-
-import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
-import { onMounted, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useUserStore } from "@/stores/appStore";
-import { storeToRefs } from "pinia";
-import type Task from "@/models/task.model";
-import type Project from "@/models/project.model";
-import { vAutoAnimate } from "@formkit/auto-animate";
-import PieChart from "@/components/PieChart.vue";
-import ProgressBar from "@/components/ProgressBar.vue";
-
-const loading = ref(false);
-const router = useRouter();
-const { currentUser, projects } = storeToRefs(useUserStore());
-const route = useRoute();
-const tasks = ref<Task[]>([]);
-const completedTasks = ref<Task[]>([]);
-const incompleteTasks = ref<Task[]>([]);
-const currentProject = ref<Project>({
-  project_id: "",
-  user_id: "",
-  title: "",
-  description: undefined,
-  created_at: "",
-  deadline: "",
-});
-const showAddTaskModal = ref(false);
-const priorities = ["Low", "Medium", "High", "Do it right now"];
-const taskTitle = ref("");
-const taskDescription = ref("");
-const taskPriority = ref(0);
-const taskDueDate = ref(currentProject.value.deadline);
-const dataToChart = ref<Array<{ value: number; color: string; label: string }>>(
-  []
-);
-
-onMounted(async () => {
-  loading.value = true;
-  let currentProjectId: string;
-  if (typeof route.params.id === "string") {
-    currentProjectId = route.params.id;
-  } else {
-    throw "Invalid project id";
-  }
-  currentProject.value = await getProjectById(
-    currentUser.value.user_id,
-    currentProjectId
-  );
-  tasks.value = await getTasksOfProject(
-    currentUser.value.user_id,
-    currentProjectId
-  );
-  loading.value = false;
-});
-
-watch(tasks, () => {
-  completedTasks.value = tasks.value.filter((task) => task.completed);
-  completedTasks.value.sort((a, b) => b.priority - a.priority);
-  incompleteTasks.value = tasks.value.filter((task) => !task.completed);
-  incompleteTasks.value.sort((a, b) => b.priority - a.priority);
-  dataToChart.value = [
-    {
-      value: tasks.value.filter((task) => task.priority === 3).length,
-      color: "#ff0000",
-      label: "High Priority",
-    },
-    {
-      value: tasks.value.filter((task) => task.priority === 2).length,
-      color: "#dd0000",
-      label: "High Priority",
-    },
-    {
-      value: tasks.value.filter((task) => task.priority === 1).length,
-      color: "#ddcc00",
-      label: "Medium Priority",
-    },
-    {
-      value: tasks.value.filter((task) => task.priority === 0).length,
-      color: "#00dd00",
-      label: "Low Priority",
-    },
-  ];
-});
-
-async function handleDeleteProject() {
-  if (currentProject.value) {
-    await deleteProject(
-      currentUser.value.user_id,
-      currentProject.value?.project_id
-    );
-    projects.value = await getUserProjects(currentUser.value.user_id);
-  }
-  router.replace("/dashboard");
-}
-
-async function handleAddTask() {
-  loading.value = true;
-  if (currentProject.value) {
-    await addTaskToProject(
-      currentUser.value.user_id,
-      currentProject.value.project_id,
-      taskTitle.value,
-      taskDescription.value,
-      taskDueDate.value,
-      taskPriority.value,
-      0
-    );
-    tasks.value = await getTasksOfProject(
-      currentUser.value.user_id,
-      currentProject.value.project_id
-    );
-  }
-  taskTitle.value = "";
-  taskDescription.value = "";
-  taskDueDate.value = "";
-  taskPriority.value = 0;
-  showAddTaskModal.value = false;
-  loading.value = false;
-}
-
-async function handleCompleteTask(task_id: string) {
-  loading.value = true;
-  if (currentProject.value) {
-    await completeTask(
-      currentUser.value.user_id,
-      currentProject.value?.project_id,
-      task_id
-    );
-    tasks.value = await getTasksOfProject(
-      currentUser.value.user_id,
-      currentProject.value.project_id
-    );
-  }
-  loading.value = false;
-}
-
-async function handleIncompleteTask(task_id: string) {
-  loading.value = true;
-  if (currentProject.value) {
-    await incompleteTask(
-      currentUser.value.user_id,
-      currentProject.value?.project_id,
-      task_id
-    );
-    tasks.value = await getTasksOfProject(
-      currentUser.value.user_id,
-      currentProject.value.project_id
-    );
-  }
-  loading.value = false;
-}
-
-async function handleDeleteTask(task_id: string) {
-  loading.value = true;
-  if (currentProject.value) {
-    await deleteTask(
-      currentUser.value.user_id,
-      currentProject.value?.project_id,
-      task_id
-    );
-    tasks.value = await getTasksOfProject(
-      currentUser.value.user_id,
-      currentProject.value.project_id
-    );
-  }
-  loading.value = false;
-}
-</script>

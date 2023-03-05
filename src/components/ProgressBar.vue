@@ -1,7 +1,7 @@
 <template>
   <svg viewBox="0 0 100 2" class="rounded-xl">
-    <rect x="0" y="0" width="100" height="10" fill="#ccc5b9ff" />
-    <rect x="0" y="0" :width="progress" height="10" :fill="color" />
+    <rect x="0" y="0" width="100" height="2" fill="#ccc5b9ff" />
+    <rect x="0" y="0" :width="progress" height="2" :fill="color" />
   </svg>
 </template>
 

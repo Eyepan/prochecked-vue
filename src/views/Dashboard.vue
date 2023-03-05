@@ -101,7 +101,7 @@ function signOut() {
       </button>
     </div>
 
-    <section id="content" class="h-screen md:w-3/4 lg:w-4/5">
+    <section id="content" class="h-screen md:w-3/4 lg:w-4/5 overflow-scroll">
       <router-view></router-view>
     </section>
   </div>
