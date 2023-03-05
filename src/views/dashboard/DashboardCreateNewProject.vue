@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Spinner from "@/components/Spinner.vue";
+import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
 import axios from "axios";
 import { ref } from "vue";
 import { useUserStore } from "@/stores/appStore";
@@ -43,7 +43,10 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <Spinner :style="{ opacity: loading ? '1' : '0' }" class="float-right" />
+  <LoadingProgressIndicator
+    :style="{ opacity: loading ? '1' : '0' }"
+    class="float-right"
+  />
   <div class="text-3xl">Create a new project!</div>
   <div class="text-l">
     It's always exciting creating a new project. Just give us some details and

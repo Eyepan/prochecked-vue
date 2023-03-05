@@ -275,6 +275,41 @@ export async function completeTask(
   return task;
 }
 
+export async function incompleteTask(
+  user_id: string,
+  project_id: string,
+  task_id: string
+) {
+  let status = 200;
+  let task: Task = {
+    task_id: "",
+    project_id: "",
+    title: "",
+    description: "",
+    due_date: "",
+    priority: 0,
+    completed: 0,
+  };
+
+  await axios
+    .put(apiUrl + "tasks/" + user_id + "/" + project_id + "/" + task_id, {
+      completed: 0,
+    })
+    .then((response) => {
+      task = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+
+  if (status !== 200) {
+    throw status;
+  }
+  return task;
+}
+
 export async function deleteTask(
   user_id: string,
   project_id: string,

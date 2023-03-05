@@ -77,7 +77,7 @@
       opacity: showAddTaskModal ? 0.2 : 1,
     }"
   >
-    <Spinner v-if="loading" class="absolute" />
+    <LoadingProgressIndicator v-if="loading" class="absolute" />
     <!-- title section -->
     <div class="flex flex-row items-center justify-between py-2">
       <div class="">
@@ -101,7 +101,9 @@
       Tasks completion percentage:
       {{
         tasks.length !== 0
-          ? ((tasks.length - incompleteTasks.length) / tasks.length) * 100
+          ? Math.floor(
+              ((tasks.length - incompleteTasks.length) / tasks.length) * 100
+            )
           : 0
       }}%
       {{
@@ -179,11 +181,19 @@
                 {{ task.completed ? "Completed" : "Not completed" }}
               </div>
             </div>
-            <div
-              @click="handleDeleteTask(task.task_id)"
-              class="text-center cursor-pointer rounded-xl"
-            >
-              <i class="fa-solid fa-trash fa-xl hover:text-red-500"></i>
+            <div class="flex flex-row gap-2">
+              <div
+                class="text-center cursor-pointer rounded-xl"
+                @click="handleIncompleteTask(task.task_id)"
+              >
+                <i class="fa-solid fa-undo"></i>
+              </div>
+              <div
+                @click="handleDeleteTask(task.task_id)"
+                class="text-center cursor-pointer rounded-xl"
+              >
+                <i class="fa-solid fa-trash fa-xl hover:text-red-500"></i>
+              </div>
             </div>
           </div>
         </div>
@@ -231,18 +241,7 @@
       <div class="flex-row items-center justify-center outline p-4 rounded-xl">
         TasksChart
         <PieChart
-          :data="[
-            {
-              color: 'var(--color-3)',
-              value: completedTasks.length,
-              label: 'Completed',
-            },
-            {
-              color: 'var(--color-2)',
-              value: incompleteTasks.length,
-              label: 'Not Completed',
-            },
-          ]"
+          :data="dataToChart"
           v-if="tasks.length > 0"
           class="max-h-96"
           :values="[completedTasks.length, incompleteTasks.length]"
@@ -251,6 +250,16 @@
         <div v-else class="text-m">
           No tasks currently available for project.
           <div class="text-xs">Add one to see the task chart.</div>
+        </div>
+      </div>
+      <div class="flex-row items-center justify-center outline p-4 rounded-xl">
+        <div class="text-xl">Task Descriptions</div>
+        <div
+          class="text-m"
+          v-for="task in tasks"
+          :style="{ color: task.completed ? 'var(--color-4)' : 'white' }"
+        >
+          {{ task.title }}: {{ task.description ? task.description : "None" }}
         </div>
       </div>
     </div>
@@ -266,9 +275,10 @@ import {
   deleteTask,
   deleteProject,
   getUserProjects,
+  incompleteTask,
 } from "@/utils/utils";
 
-import Spinner from "@/components/Spinner.vue";
+import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useUserStore } from "@/stores/appStore";
@@ -300,6 +310,9 @@ const taskTitle = ref("");
 const taskDescription = ref("");
 const taskPriority = ref(0);
 const taskDueDate = ref(currentProject.value.deadline);
+const dataToChart = ref<Array<{ value: number; color: string; label: string }>>(
+  []
+);
 
 onMounted(async () => {
   loading.value = true;
@@ -325,6 +338,28 @@ watch(tasks, () => {
   completedTasks.value.sort((a, b) => b.priority - a.priority);
   incompleteTasks.value = tasks.value.filter((task) => !task.completed);
   incompleteTasks.value.sort((a, b) => b.priority - a.priority);
+  dataToChart.value = [
+    {
+      value: tasks.value.filter((task) => task.priority === 3).length,
+      color: "#ff0000",
+      label: "High Priority",
+    },
+    {
+      value: tasks.value.filter((task) => task.priority === 2).length,
+      color: "#dd0000",
+      label: "High Priority",
+    },
+    {
+      value: tasks.value.filter((task) => task.priority === 1).length,
+      color: "#ddcc00",
+      label: "Medium Priority",
+    },
+    {
+      value: tasks.value.filter((task) => task.priority === 0).length,
+      color: "#00dd00",
+      label: "Low Priority",
+    },
+  ];
 });
 
 async function handleDeleteProject() {
@@ -378,6 +413,23 @@ async function handleCompleteTask(task_id: string) {
   }
   loading.value = false;
 }
+
+async function handleIncompleteTask(task_id: string) {
+  loading.value = true;
+  if (currentProject.value) {
+    await incompleteTask(
+      currentUser.value.user_id,
+      currentProject.value?.project_id,
+      task_id
+    );
+    tasks.value = await getTasksOfProject(
+      currentUser.value.user_id,
+      currentProject.value.project_id
+    );
+  }
+  loading.value = false;
+}
+
 async function handleDeleteTask(task_id: string) {
   loading.value = true;
   if (currentProject.value) {

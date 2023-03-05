@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Spinner from "@/components/Spinner.vue";
+import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
 import { ref } from "vue";
 import { vAutoAnimate } from "@formkit/auto-animate";
 
@@ -47,7 +47,10 @@ async function onSubmit() {
 
 <template>
   <section>
-    <Spinner :style="{ opacity: loading ? '1' : '0' }" class="float-right" />
+    <LoadingProgressIndicator
+      :style="{ opacity: loading ? '1' : '0' }"
+      class="float-right"
+    />
     <div class="flex items-center justify-center m-5 md:m-40">
       <form
         v-auto-animate
