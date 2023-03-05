@@ -41,7 +41,10 @@ function signOut() {
         </div>
       </div>
 
-      <div class="text-xl mt-3">Home:</div>
+      <div class="text-xl mt-3">
+        <i class="fa-solid fa-house"></i>
+        Home:
+      </div>
       <div class="mt-3 flex flex-col gap-2 my-3">
         <RouterLink
           to="/home"
@@ -52,7 +55,7 @@ function signOut() {
         >
         <RouterLink
           to="/profile"
-          class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-2)] hover:text-[var(--color-5)]"
+          class="w-full text-left text-lg px-2 rounded-md hover:bg-[var(--button-bg-color-2)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-person"></i>
           Profile
@@ -79,7 +82,7 @@ function signOut() {
         >
           <RouterLink
             :to="`/project/${project.project_id}`"
-            class="text-lg hover:font-bold cursor-pointer w-full py-1 pl-4 rounded-lg hover:bg-[var(--color-5)] dark:hover:bg-[var(--color-1)]"
+            class="text-lg cursor-pointer w-full py-1 pl-2 rounded-lg hover:bg-[var(--color-5)] dark:hover:bg-[var(--color-1)]"
           >
             {{ project.title }}
           </RouterLink>

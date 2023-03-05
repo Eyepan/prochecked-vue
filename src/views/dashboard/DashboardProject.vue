@@ -20,6 +20,7 @@ import type Project from "@/models/project.model";
 import { vAutoAnimate } from "@formkit/auto-animate";
 import PieChart from "@/components/PieChart.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
+import ErrorDisplayer from "@/components/ErrorDisplayer.vue";
 
 const loading = ref(false);
 const router = useRouter();
@@ -46,6 +47,8 @@ const taskDueDate = ref("");
 const dataToChart = ref<Array<{ value: number; color: string; label: string }>>(
   []
 );
+const invalidProjectId = ref(false);
+const invalidTaskId = ref(false);
 
 onMounted(async () => {
   loading.value = true;
@@ -53,16 +56,27 @@ onMounted(async () => {
   if (typeof route.params.id === "string") {
     currentProjectId = route.params.id;
   } else {
-    throw "Invalid project id";
+    currentProjectId = "";
+    invalidProjectId.value = true;
   }
-  currentProject.value = await getProjectById(
+  const projectResponse = await getProjectById(
     currentUser.value.user_id,
     currentProjectId
   );
-  tasks.value = await getTasksOfProject(
+  if (typeof projectResponse !== "number") {
+    currentProject.value = projectResponse;
+  } else {
+    invalidProjectId.value = true;
+  }
+  const tasksResponse = await getTasksOfProject(
     currentUser.value.user_id,
-    currentProjectId
+    currentProject.value.project_id
   );
+  if (typeof tasksResponse !== "number") {
+    tasks.value = tasksResponse;
+  } else {
+    invalidProjectId.value = true;
+  }
   taskDueDate.value = new Date(currentProject.value.deadline)
     .toISOString()
     .split("T")[0];
@@ -144,10 +158,15 @@ async function handleAddTask() {
       taskPriority.value,
       0
     );
-    tasks.value = await getTasksOfProject(
+    const tasksResponse = await getTasksOfProject(
       currentUser.value.user_id,
       currentProject.value.project_id
     );
+    if (typeof tasksResponse !== "number") {
+      tasks.value = tasksResponse;
+    } else {
+      invalidProjectId.value = true;
+    }
   }
   taskTitle.value = "";
   taskDescription.value = "";
@@ -167,10 +186,15 @@ async function handleCompleteTask(task_id: string) {
       currentProject.value?.project_id,
       task_id
     );
-    tasks.value = await getTasksOfProject(
+    const tasksResponse = await getTasksOfProject(
       currentUser.value.user_id,
       currentProject.value.project_id
     );
+    if (typeof tasksResponse !== "number") {
+      tasks.value = tasksResponse;
+    } else {
+      invalidProjectId.value = true;
+    }
   }
   loading.value = false;
 }
@@ -183,10 +207,15 @@ async function handleIncompleteTask(task_id: string) {
       currentProject.value?.project_id,
       task_id
     );
-    tasks.value = await getTasksOfProject(
+    const tasksResponse = await getTasksOfProject(
       currentUser.value.user_id,
       currentProject.value.project_id
     );
+    if (typeof tasksResponse !== "number") {
+      tasks.value = tasksResponse;
+    } else {
+      invalidProjectId.value = true;
+    }
   }
   loading.value = false;
 }
@@ -199,16 +228,23 @@ async function handleDeleteTask(task_id: string) {
       currentProject.value?.project_id,
       task_id
     );
-    tasks.value = await getTasksOfProject(
+    const tasksResponse = await getTasksOfProject(
       currentUser.value.user_id,
       currentProject.value.project_id
     );
+    if (typeof tasksResponse !== "number") {
+      tasks.value = tasksResponse;
+    } else {
+      invalidProjectId.value = true;
+    }
   }
   loading.value = false;
 }
 </script>
 
 <template>
+  <ErrorDisplayer v-if="invalidProjectId" error="Invalid Project ID" />
+  <ErrorDisplayer v-if="invalidTaskId" error="Invalid Task ID" />
   <div
     v-auto-animate
     v-if="showAddTaskModal"
@@ -489,10 +525,12 @@ async function handleDeleteTask(task_id: string) {
         class="flex-row items-center justify-center outline p-4 rounded-xl lg:col-span-3"
       >
         <div class="text-2xl">Task Descriptions</div>
-        <div class="text-lg" v-for="task in completedTasks">
-          {{ task.title }}:
-          <div class="text-sm">
-            {{ task.description ? task.description : "None" }}
+        <div class="text-lg" v-for="task in tasks">
+          <div class="" v-if="task.description">
+            {{ task.title }}:
+            <div class="text-sm">
+              {{ task.description ? task.description : "None" }}
+            </div>
           </div>
         </div>
       </div>

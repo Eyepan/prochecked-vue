@@ -8,6 +8,7 @@ import { getAllUserTasks } from "@/utils/utils";
 import PieChart from "@/components/PieChart.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import { getRandomAffirmation } from "@/utils/affirmations";
+import ErrorDisplayer from "@/components/ErrorDisplayer.vue";
 
 const { projects, currentUser } = storeToRefs(useUserStore());
 const tasks = ref<Task[]>([]);
@@ -15,11 +16,16 @@ const completedTasks = ref<Task[]>([]);
 const incompleteTasks = ref<Task[]>([]);
 const priorities = ["Low", "Medium", "High", "Do it right now"];
 const loading = ref(false);
-
+const invalidTaskId = ref(false);
 onMounted(async () => {
   loading.value = true;
   if (currentUser.value) {
-    tasks.value = await getAllUserTasks(currentUser.value.user_id);
+    const tasksResponse = await getAllUserTasks(currentUser.value.user_id);
+    if (typeof tasksResponse !== "number") {
+      tasks.value = tasksResponse;
+    } else {
+      invalidTaskId.value = true;
+    }
   }
   completedTasks.value = tasks.value.filter((task) => task.completed);
   incompleteTasks.value = tasks.value.filter((task) => !task.completed);
@@ -32,11 +38,15 @@ watch(tasks, () => {
 </script>
 
 <template>
+  <ErrorDisplayer v-if="invalidTaskId" error="Invalid Task ID" />
   <div class="text-7xl font-black mb-5">Dashboard</div>
   <div class="text-2xl lg:text-4xl">
     {{ getRandomAffirmation() }}
   </div>
-  <div class="grid grid-cols-2 lg:grid-cols-3 gap-5 mt-5">
+  <div
+    v-if="projects.length > 0"
+    class="grid grid-cols-2 lg:grid-cols-3 gap-5 mt-5"
+  >
     <div class="w-full h-full outline rounded-xl p-4">
       <div class="text-xl m-2 text-center">Total Tasks completion</div>
 
@@ -204,5 +214,9 @@ watch(tasks, () => {
         </div>
       </div>
     </div>
+  </div>
+  <div v-else class="text-xl">
+    Aw, you haven't created any projects... yet. Create one using the button to
+    the left.
   </div>
 </template>

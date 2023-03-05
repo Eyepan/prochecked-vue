@@ -35,7 +35,7 @@ export async function signin(
       }
     });
   if (status !== 200) {
-    throw status;
+    return status;
   } else {
     return user;
   }
@@ -74,7 +74,7 @@ export async function signup(
       }
     });
   if (status !== 200) {
-    throw status;
+    return status;
   } else {
     return user;
   }
@@ -90,7 +90,7 @@ export async function getUserProjects(user_id: string): Promise<Project[]> {
     })
     .catch((error) => {
       if (error.response && error.response.status !== 200) {
-        throw error.response.status;
+        return error.response.status;
       }
     });
 
@@ -106,7 +106,7 @@ export async function getProjectById(user_id: string, project_id: string) {
     created_at: "",
     deadline: "",
   };
-
+  let status = 200;
   await axios
     .get(apiUrl + "projects/" + user_id + "/" + project_id)
     .then((response) => {
@@ -114,15 +114,17 @@ export async function getProjectById(user_id: string, project_id: string) {
     })
     .catch((error) => {
       if (error.response) {
-        if (error.response.status === 404) {
-          throw 404;
-        }
+        status = error.response.status;
       } else {
-        throw 500;
+        status = 500;
       }
     });
 
-  return project;
+  if (status !== 200) {
+    return status;
+  } else {
+    return project;
+  }
 }
 
 export async function createNewProject(
@@ -131,7 +133,7 @@ export async function createNewProject(
   description: string,
   created_at: string,
   deadline: string
-): Promise<Project> {
+): Promise<Project | number> {
   let status = 200;
   let project: Project = {
     project_id: "",
@@ -158,7 +160,7 @@ export async function createNewProject(
     });
 
   if (status !== 200) {
-    throw status;
+    return status;
   } else {
     return project;
   }
@@ -167,15 +169,16 @@ export async function createNewProject(
 export async function deleteProject(
   user_id: string,
   project_id: string
-): Promise<void> {
+): Promise<number> {
   let status = 200;
   await axios
     .delete(apiUrl + "projects/" + user_id + "/" + project_id)
     .catch((error) => {
       if (error.response && error.response.status !== 200) {
-        throw (status = error.response.status);
+        status = error.response.status;
       }
     });
+  return status;
 }
 
 export async function getTasksOfProject(user_id: string, project_id: string) {
@@ -192,7 +195,11 @@ export async function getTasksOfProject(user_id: string, project_id: string) {
       }
     });
   if (status !== 200) {
-    throw status;
+    if (status !== 404) {
+      return status;
+    } else {
+      return tasks;
+    }
   }
   return tasks;
 }
@@ -234,7 +241,7 @@ export async function addTaskToProject(
     });
 
   if (status !== 200) {
-    throw status;
+    return status;
   } else {
     return task;
   }
@@ -270,7 +277,7 @@ export async function completeTask(
     });
 
   if (status !== 200) {
-    throw status;
+    return status;
   }
   return task;
 }
@@ -305,7 +312,7 @@ export async function incompleteTask(
     });
 
   if (status !== 200) {
-    throw status;
+    return status;
   }
   return task;
 }
@@ -320,20 +327,31 @@ export async function deleteTask(
     .delete(apiUrl + "tasks/" + user_id + "/" + project_id + "/" + task_id)
     .catch((error) => {
       if (error.response) {
-        throw error.response.status;
+        status = error.response.status;
       }
     });
+  return status;
 }
 
-export async function getAllUserTasks(user_id: string): Promise<Task[]> {
+export async function getAllUserTasks(
+  user_id: string
+): Promise<Task[] | number> {
   let tasks: Task[] = [];
+  let status = 200;
   await axios
     .get(apiUrl + "tasks/" + user_id)
     .then((response) => {
       tasks = response.data;
     })
     .catch((error) => {
-      throw error.response.status;
+      status = error.response.status;
     });
+  if (status !== 200) {
+    if (status === 404) {
+      return [];
+    } else {
+      return status;
+    }
+  }
   return tasks;
 }
