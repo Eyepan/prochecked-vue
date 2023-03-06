@@ -1,4 +1,5 @@
 @import "./base.css";
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 * {
   transition: all 100ms ease-in-out;
@@ -24,6 +25,11 @@ body {
   width: 100vw;
 }
 
+// @font-face {
+//   font-family: "SF Pro Display";
+//   src: url("./fonts/SF_Pro_Display_Regular.ttf");
+//   font-weight: 400;
+// }
 @layer components {
   body {
     @apply text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-5)] dark:bg-[var(--color-1)];

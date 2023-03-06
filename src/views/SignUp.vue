@@ -2,11 +2,10 @@
 import LoadingProgressIndicator from "@/components/LoadingProgressIndicator.vue";
 import { ref } from "vue";
 import { vAutoAnimate } from "@formkit/auto-animate";
-
-import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { signup } from "@/utils/utils";
+import { useUserStore } from "@/stores/appStore";
 
 const router = useRouter();
 

@@ -3,6 +3,5 @@ import { ref } from "vue";
 
 export const useSettingsStore = defineStore("settings", () => {
   const showGraphs = ref("true");
-  const defaultFontSize = ref(16);
-  return { showGraphs, defaultFontSize };
+  return { showGraphs };
 });

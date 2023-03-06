@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import { useUserStore } from "./stores/appStore";
 import DarkMode from "./components/DarkMode.vue";
 
-const { isLoggedIn, currentUser } = storeToRefs(useUserStore());
+const { isLoggedIn } = storeToRefs(useUserStore());
 const router = useRouter();
 if (isLoggedIn.value) {
   router.replace("/dashboard");
