@@ -36,6 +36,9 @@ const items = computed<PieChartItem[]>(() => {
   });
 });
 
+// I don't know why, I don't want to know why, but this is
+// the only way to get the correct path data
+// TODO: This is dumb. Fix it.
 function getSlicePath(startAngle: number, endAngle: number): string {
   const radius = 50;
   const x1 = Math.cos((startAngle * Math.PI) / 180) * radius;

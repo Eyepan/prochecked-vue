@@ -89,8 +89,12 @@ export async function getUserProjects(user_id: string): Promise<Project[]> {
       projects = response.data;
     })
     .catch((error) => {
+      // Basically, you're fucked. Royally.
       if (error.response && error.response.status !== 200) {
         return error.response.status;
+      } else {
+        // IF YOU THOUGHT YOU WERE FUCKED BEFORE...
+        return 500;
       }
     });
 
@@ -182,6 +186,7 @@ export async function deleteProject(
 }
 
 export async function getTasksOfProject(user_id: string, project_id: string) {
+  // this is shit code, but it's 3 am and i need to get it working
   let tasks: Task[] = [];
   let status = 200;
   await axios

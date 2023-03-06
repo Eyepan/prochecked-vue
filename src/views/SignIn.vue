@@ -26,8 +26,10 @@ async function onSubmit() {
   } else {
     if (response === 404) {
       wrongDetails.value = true;
+      // you messed up
     } else {
       serverError.value = true;
+      // i messed up
     }
   }
   loading.value = false;

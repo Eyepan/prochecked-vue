@@ -147,6 +147,7 @@ async function handleDeleteProject() {
 }
 
 async function handleAddTask() {
+  // This code sucks, you know it and I know it. I'll fix it later.
   loading.value = true;
   if (currentProject.value) {
     await addTaskToProject(
@@ -245,6 +246,7 @@ async function handleDeleteTask(task_id: string) {
 <template>
   <ErrorDisplayer v-if="invalidProjectId" error="Invalid Project ID" />
   <ErrorDisplayer v-if="invalidTaskId" error="Invalid Task ID" />
+  <!-- magical code, don't touch -->
   <div
     v-auto-animate
     v-if="showAddTaskModal"
@@ -537,3 +539,5 @@ async function handleDeleteTask(task_id: string) {
     </div>
   </div>
 </template>
+<!-- 540 lines of freshly baked bullshit. I dedicate all of this code to my girlfriend,  -->
+<!-- who will support me and my dog once this gets released to the public -->

@@ -2,6 +2,8 @@
 defineProps<{
   error: string;
 }>();
+
+// how in the fuck did you even get here
 </script>
 
 <template>

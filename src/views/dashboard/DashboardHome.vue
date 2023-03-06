@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// get all projects
+// DRUNK PAN WROTE THIS. NOBODY TOUCH THIS.
 import { storeToRefs } from "pinia";
 import { useUserStore } from "@/stores/appStore";
 import { onMounted, ref, watch } from "vue";
@@ -27,6 +27,7 @@ onMounted(async () => {
       invalidTaskId.value = true;
     }
   }
+  // dear future me, please forgive me. I can't even begin to express how deeply sorry i am
   completedTasks.value = tasks.value.filter((task) => task.completed);
   incompleteTasks.value = tasks.value.filter((task) => !task.completed);
   loading.value = true;

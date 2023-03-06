@@ -13,6 +13,9 @@ const title = ref("");
 const description = ref("");
 const deadline = ref(new Date().toISOString().split("T")[0]);
 
+// no comments for you future pan
+// it was hard to write
+// it will be harder to read
 async function handleSubmit() {
   loading.value = true;
   console.log(deadline);
@@ -27,11 +30,11 @@ async function handleSubmit() {
     deadlineString
   );
   if (typeof response === "number") {
-    // TODO: handle error
+    // TODO: handle this error because fuck you future pan
   } else {
     const p = await getUserProjects(currentUser.value.user_id);
     if (typeof p === "number") {
-      // TODO: handle error
+      // FIXME: No error handling because of COURSE it will work, right?
     } else {
       projects.value = p;
       router.push("/project/" + response.project_id + "");
