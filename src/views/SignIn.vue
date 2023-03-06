@@ -22,7 +22,7 @@ async function onSubmit() {
   if (typeof response !== "number") {
     isLoggedIn.value = true;
     currentUser.value = response;
-    router.replace("/home");
+    router.replace("/dashboard");
   } else {
     if (response === 404) {
       wrongDetails.value = true;

@@ -3,7 +3,7 @@ import { RouterLink } from "vue-router";
 </script>
 
 <template>
-  <section class="lg:m-20">
+  <section class="lg:p-20">
     <img
       class="mt-5 ml-3 rounded-3xl drop-shadow-lg float-right w-[calc(50%_-_2rem)]"
       src="@/assets/images/home.png"

@@ -47,7 +47,7 @@ function signOut() {
       </div>
       <div class="mt-3 flex flex-col gap-2 my-3">
         <RouterLink
-          to="/home"
+          to="/dashboard"
           class="w-full text-left text-lg p-1 px-2 rounded-md hover:bg-[var(--button-bg-color-1)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-chart-simple"></i>
@@ -55,7 +55,7 @@ function signOut() {
         >
         <RouterLink
           to="/profile"
-          class="w-full text-left text-lg px-2 rounded-md hover:bg-[var(--button-bg-color-2)] hover:text-[var(--color-5)]"
+          class="w-full text-left text-lg px-2 p-1 rounded-md hover:bg-[var(--button-bg-color-2)] hover:text-[var(--color-5)]"
         >
           <i class="fa-solid fa-person"></i>
           Profile

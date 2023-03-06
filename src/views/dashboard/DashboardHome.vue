@@ -55,12 +55,12 @@ watch(tasks, () => {
         :data="[
           {
             value: completedTasks.length,
-            color: 'var(--color-3)',
+            color: '#777777',
             label: 'Completed',
           },
           {
             value: incompleteTasks.length,
-            color: 'var(--color-2)',
+            color: '#111111',
             label: 'Not Completed',
           },
         ]"
@@ -73,18 +73,23 @@ watch(tasks, () => {
         :data="[
           {
             value: incompleteTasks.filter((task) => task.priority === 0).length,
-            color: 'var(--color-3)',
+            color: '#111111',
             label: 'Low',
           },
           {
             value: incompleteTasks.filter((task) => task.priority === 1).length,
-            color: 'var(--color-2)',
+            color: '#777777',
             label: 'Medium',
           },
           {
             value: incompleteTasks.filter((task) => task.priority === 2).length,
-            color: 'var(--color-1)',
+            color: '#999999',
             label: 'High',
+          },
+          {
+            value: incompleteTasks.filter((task) => task.priority === 3).length,
+            color: '#dddddd',
+            label: 'Do it right now',
           },
         ]"
       />

@@ -43,4 +43,10 @@ body {
   textarea {
     @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg;
   }
+  select {
+    @apply outline focus:outline-[var(--color-3)] bg-transparent rounded-lg p-2 ml-5;
+  }
+  option {
+    @apply outline focus:outline-[var(--color-3)]  text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-5)] dark:bg-[var(--color-1)] rounded-lg;
+  }
 }

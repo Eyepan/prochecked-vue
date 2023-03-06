@@ -39,7 +39,7 @@ async function onSubmit() {
   } else {
     isLoggedIn.value = true;
     currentUser.value = response;
-    router.replace("/home");
+    router.replace("/dashboard");
   }
   loading.value = false;
 }

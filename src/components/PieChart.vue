@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from "vue";
-
+import { useSettingsStore } from "@/stores/settingsStore";
+import { storeToRefs } from "pinia";
+import { vAutoAnimate } from "@formkit/auto-animate";
+const { showGraphs } = storeToRefs(useSettingsStore());
 interface PieChartItem {
   value: number;
   path: string;
@@ -71,7 +74,7 @@ function getLabelY(startAngle: number, endAngle: number): number {
 </script>
 
 <template>
-  <svg viewBox="0 0 100 100">
+  <svg v-auto-animate v-if="showGraphs === 'true'" viewBox="0 0 100 100">
     <g transform="translate(50,50)">
       <circle r="49" fill="#ccc5b9aa" class="hover:fill-white" />
       <path
@@ -94,4 +97,7 @@ function getLabelY(startAngle: number, endAngle: number): number {
       </text>
     </g>
   </svg>
+  <div v-else>
+    Show graphs has been disabled, enable it from the settings page.
+  </div>
 </template>

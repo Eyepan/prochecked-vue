@@ -360,3 +360,40 @@ export async function getAllUserTasks(
   }
   return tasks;
 }
+
+// update user
+export async function updateUser(
+  user_id: string,
+  username: string,
+  email: string,
+  password: string,
+  newPassword: string
+) {
+  let status = 200;
+  let user: User = {
+    user_id: "",
+    name: "",
+    email: "",
+    password: "",
+  };
+  await axios
+    .put(apiUrl + "users/" + user_id, {
+      name: username,
+      email: email,
+      password: password,
+      newPassword: newPassword,
+    })
+    .then((response) => {
+      user = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+
+  if (status !== 200) {
+    return status;
+  }
+  return user;
+}
