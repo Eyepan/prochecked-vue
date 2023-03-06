@@ -8,6 +8,8 @@ import DashboardProject from "@/views/dashboard/DashboardProject.vue";
 import DashboardProfile from "@/views/dashboard/DashboardProfile.vue";
 import DashboardCreateNewProject from "@/views/dashboard/DashboardCreateNewProject.vue";
 import Settings from "@/views/dashboard/DashboardSettings.vue";
+import DashboardEditProject from "@/views/dashboard/DashboardEditProject.vue";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -56,6 +58,11 @@ const router = createRouter({
           path: "/settings",
           name: "settings",
           component: Settings,
+        },
+        {
+          path: "/edit-project/:id",
+          name: "editproject",
+          component: DashboardEditProject,
         },
       ],
     },

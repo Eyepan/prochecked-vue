@@ -80,7 +80,9 @@ export async function signup(
   }
 }
 
-export async function getUserProjects(user_id: string): Promise<Project[]> {
+export async function getUserProjects(
+  user_id: string
+): Promise<Project[] | number> {
   let projects: Project[] = [];
   let status = 200;
   await axios
@@ -91,13 +93,16 @@ export async function getUserProjects(user_id: string): Promise<Project[]> {
     .catch((error) => {
       // Basically, you're fucked. Royally.
       if (error.response && error.response.status !== 200) {
-        return error.response.status;
+        status = error.response.status;
       } else {
         // IF YOU THOUGHT YOU WERE FUCKED BEFORE...
-        return 500;
+        status = 500;
       }
     });
 
+  if (status !== 200) {
+    return status;
+  }
   return projects;
 }
 
@@ -396,4 +401,28 @@ export async function updateUser(
     return status;
   }
   return user;
+}
+
+export async function updateProject(user_id: string, project: Project) {
+  let status = 200;
+  await axios
+    .put(apiUrl + "projects/" + user_id + "/" + project.project_id, {
+      title: project.title,
+      description: project.description,
+      created_at: project.created_at,
+      deadline: project.deadline,
+    })
+    .then((response) => {
+      project = response.data;
+    })
+    .catch((error) => {
+      if (error.response) {
+        status = error.response.status;
+      }
+    });
+
+  if (status !== 200) {
+    return status;
+  }
+  return project;
 }

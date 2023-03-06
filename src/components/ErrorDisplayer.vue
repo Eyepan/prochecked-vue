@@ -1,9 +1,20 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/appStore";
+import { storeToRefs } from "pinia";
+const { currentUser, isLoggedIn } = storeToRefs(useUserStore());
 defineProps<{
   error: string;
 }>();
-
-// how in the fuck did you even get here
+const router = useRouter();
+function getToSafety() {
+  currentUser.value.user_id = "";
+  currentUser.value.email = "";
+  currentUser.value.password = "";
+  isLoggedIn.value = false;
+  localStorage.removeItem("currentUser");
+  router.replace("/");
+}
 </script>
 
 <template>
@@ -14,8 +25,6 @@ defineProps<{
     <div class="text-3xl">
       <div class="text-5xl font-black">{{ error }}</div>
     </div>
-    <button class="btn-primary" @click="$router.replace('/')">
-      Back to safety
-    </button>
+    <button class="btn-primary" @click="getToSafety()">Back to safety</button>
   </div>
 </template>
