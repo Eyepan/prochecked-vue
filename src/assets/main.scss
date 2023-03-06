@@ -30,11 +30,6 @@ body {
   width: 100vw;
 }
 
-// @font-face {
-//   font-family: "SF Pro Display";
-//   src: url("./fonts/SF_Pro_Display_Regular.ttf");
-//   font-weight: 400;
-// }
 @layer components {
   body {
     @apply text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-5)] dark:bg-[var(--color-1)];
