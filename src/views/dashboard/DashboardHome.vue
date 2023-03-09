@@ -9,6 +9,7 @@ import PieChart from "@/components/PieChart.vue";
 import ProgressBar from "@/components/ProgressBar.vue";
 import { getIncrementalAffirmation } from "@/utils/affirmations";
 import ErrorDisplayer from "@/components/ErrorDisplayer.vue";
+import { useRouter } from "vue-router";
 
 const { projects, currentUser } = storeToRefs(useUserStore());
 const tasks = ref<Task[]>([]);
@@ -19,13 +20,15 @@ const loading = ref(false);
 const invalidTaskId = ref(false);
 onMounted(async () => {
   loading.value = true;
-  if (currentUser.value) {
+  if (currentUser.value.user_id !== "") {
     const tasksResponse = await getAllUserTasks(currentUser.value.user_id);
     if (typeof tasksResponse !== "number") {
       tasks.value = tasksResponse;
     } else {
       invalidTaskId.value = true;
     }
+  } else {
+    useRouter().replace("/login");
   }
   // dear future me, please forgive me. I can't even begin to express how deeply sorry i am
   completedTasks.value = tasks.value.filter((task) => task.completed);
@@ -40,18 +43,19 @@ watch(tasks, () => {
 
 <template>
   <ErrorDisplayer v-if="invalidTaskId" error="Invalid Task ID" />
-  <div class="text-7xl font-black mb-5">Dashboard</div>
-  <div class="text-2xl lg:text-4xl">
+  <div class="text-5xl md:text-7xl font-black mb-5">Dashboard</div>
+  <div class="text-xl md:text-2xl lg:text-4xl">
     {{ getIncrementalAffirmation() }}
   </div>
   <div
     v-if="projects.length > 0"
-    class="grid grid-cols-2 lg:grid-cols-3 gap-5 mt-5"
+    class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5"
   >
     <div class="w-full h-full outline rounded-xl p-4">
       <div class="text-xl m-2 text-center">Total Tasks completion</div>
 
       <PieChart
+        v-if="tasks.length > 0"
         :data="[
           {
             value: completedTasks.length,
@@ -66,11 +70,13 @@ watch(tasks, () => {
           },
         ]"
       />
+      <div v-else class="">No tasks created, create one!</div>
     </div>
     <div class="w-full h-full outline rounded-xl p-4">
       <!-- task priorities -->
       <div class="text-xl m-2 text-center">Incomplete Tasks Analysis</div>
       <PieChart
+        v-if="tasks.length > 0"
         :data="[
           {
             value: incompleteTasks.filter((task) => task.priority === 0).length,
@@ -94,6 +100,7 @@ watch(tasks, () => {
           },
         ]"
       />
+      <div v-else class="">No tasks created, create one!</div>
     </div>
     <div class="w-full h-full outline rounded-xl p-4">
       <div class="text-xl m-2 text-center">Projects Analysis</div>
@@ -222,8 +229,7 @@ watch(tasks, () => {
       </div>
     </div>
   </div>
-  <div v-else class="text-xl">
-    Aw, you haven't created any projects... yet. Create one using the button to
-    the left.
+  <div v-else class="text-md mt-10">
+    Aw, you haven't created any projects... yet. Create one now!
   </div>
 </template>

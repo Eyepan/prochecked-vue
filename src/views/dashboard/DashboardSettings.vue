@@ -5,7 +5,7 @@ const { showGraphs } = storeToRefs(useSettingsStore());
 </script>
 
 <template>
-  <div>
+  <div class="">
     <div class="text-7xl font-black mb-5">Settings</div>
     <div class="text-2xl font-bold">Edit your settings</div>
     <div class="flex mt-5 items-center justify-between">

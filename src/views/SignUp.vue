@@ -45,17 +45,17 @@ async function onSubmit() {
 </script>
 
 <template>
-  <section>
+  <div>
     <LoadingProgressIndicator
-      :style="{ opacity: loading ? '1' : '0' }"
+      v-auto-animate
+      v-if="loading"
       class="float-right"
     />
-    <div class="flex items-center justify-center m-5 md:m-40">
+    <div class="flex items-center justify-center p-5 md:p-40 h-screen">
       <form
-        v-auto-animate
         @submit.prevent="onSubmit()"
         method="post"
-        class="mt-5 flex flex-col items-end gap-5 outline rounded-3xl p-8 md:p-16"
+        class="text-center flex flex-col items-end gap-5 outline rounded-3xl p-8 md:p-16"
       >
         <p class="text-2xl">Create Account</p>
         <input
@@ -99,7 +99,7 @@ async function onSubmit() {
         <div v-if="serverError" class="dark:text-white text-black">
           Sorry. Something went wrong on our side, please try again later
         </div>
-        <p class="mt-5" v-if="!serverError">
+        <p class="mt-5 text-sm md:text-lg" v-if="!serverError">
           Already have an account?
           <RouterLink
             class="rounded-xl p-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
@@ -112,5 +112,5 @@ async function onSubmit() {
         </button>
       </form>
     </div>
-  </section>
+  </div>
 </template>

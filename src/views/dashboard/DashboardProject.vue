@@ -257,7 +257,7 @@ async function handleDeleteTask(task_id: string) {
   >
     <form
       @submit.prevent="handleAddTask()"
-      class="relative outline w-1/2 h-1/2 rounded-xl bg-[var(--color-4)] dark:bg-[var(--color-2)] flex flex-col gap-4 items-center justify-center"
+      class="relative outline py-10 rounded-xl bg-[var(--color-4)] dark:bg-[var(--color-2)] flex flex-col gap-4 items-center justify-center"
     >
       <i
         @click="showAddTaskModal = false"
@@ -323,7 +323,7 @@ async function handleDeleteTask(task_id: string) {
   </div>
   <div
     v-if="showDeleteProjectModal"
-    class="flex flex-col gap-2 text-center items-center justify-center absolute w-screen h-screen top-0 bottom-0 left-0 right-0 bg-red-500 z-50"
+    class="flex flex-col gap-2 text-center items-center justify-center absolute w-screen top-0 bottom-0 left-0 right-0 bg-red-500 z-50"
   >
     <i class="fa-solid fa-warning text-9xl"></i>
     <div class="text-3xl">
@@ -447,7 +447,7 @@ async function handleDeleteTask(task_id: string) {
     </div>
 
     <!-- task list -->
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
       <div class="outline p-4 rounded-xl">
         <div class="text-2xl">Completed Tasks</div>
         <div

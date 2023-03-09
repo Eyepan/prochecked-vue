@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { vAutoAnimate } from "@formkit/auto-animate";
 import { useRouter } from "vue-router";
-import { onMounted, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
 import { getUserProjects } from "@/utils/utils";
@@ -9,6 +9,7 @@ const { currentUser, projects, isLoggedIn } = storeToRefs(useUserStore());
 
 const router = useRouter();
 
+const showSideBar = ref(false);
 onMounted(async () => {
   const response = await getUserProjects(currentUser.value.user_id);
   if (typeof response === "number") {
@@ -29,10 +30,18 @@ function signOut() {
 </script>
 
 <template>
-  <div class="flex flex-row">
+  <div v-auto-animate class="flex flex-col transition-all h-screen">
+    <div class="w-full bg-white dark:bg-black">
+      <i
+        class="z-50 m-5 p-2 fa-solid fa-bars fa-xl cursor-pointer"
+        @click="showSideBar = true"
+      ></i>
+    </div>
+    <!-- hamburger sidebar -->
     <div
       id="sidebar"
-      class="relative md:w-1/4 lg:w-1/6 p-4 h-screen text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-4)] dark:bg-[var(--color-2)]"
+      v-if="showSideBar"
+      class="z-50 rounded-r-2xl absolute md:w-1/4 lg:w-1/6 p-4 h-full text-[var(--color-1)] dark:text-[var(--color-5)] bg-[var(--color-4)] dark:bg-[var(--color-2)]"
     >
       <div class="text-2xl">
         Hi
@@ -104,7 +113,12 @@ function signOut() {
       </button>
     </div>
 
-    <section id="content" class="h-screen md:w-3/4 lg:w-5/6 overflow-scroll">
+    <section
+      id="content"
+      @click="showSideBar = false"
+      :class="showSideBar ? 'opacity-50' : 'opacity-100'"
+      class="h-full w-full p-10 overflow-y-scroll"
+    >
       <router-view />
     </section>
   </div>

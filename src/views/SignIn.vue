@@ -32,21 +32,26 @@ async function onSubmit() {
       // i messed up
     }
   }
+  if (currentUser.value.user_id === "") {
+    serverError.value = true;
+    isLoggedIn.value = false;
+  }
   loading.value = false;
 }
 </script>
 
 <template>
-  <section>
+  <div class="flex items-center justify-center p-5 md:p-40 h-screen">
     <LoadingProgressIndicator
-      :style="{ opacity: loading ? '1' : '0' }"
+      v-auto-animate
+      v-if="loading"
       class="float-right"
     />
-    <div class="flex items-center justify-center m-5 md:m-40">
+    <div class="">
       <form
         v-auto-animate
         @submit.prevent="onSubmit()"
-        class="mt-5 flex flex-col items-start gap-5 outline rounded-3xl p-8 md:p-16"
+        class="text-center flex flex-col items-start gap-5 outline rounded-3xl p-8 md:p-16"
       >
         <p class="text-2xl">Welcome back</p>
         <input
@@ -79,7 +84,7 @@ async function onSubmit() {
           </div>
         </Transition>
 
-        <p class="mt-5">
+        <p class="mt-5 text-sm md:text-lg">
           Don't have an account?
           <RouterLink
             class="rounded-xl p-2 hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black"
@@ -90,7 +95,7 @@ async function onSubmit() {
         <button class="w-full btn-primary">Log In</button>
       </form>
     </div>
-  </section>
+  </div>
 </template>
 
 <style scoped>
