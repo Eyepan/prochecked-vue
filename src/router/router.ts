@@ -9,6 +9,8 @@ import DashboardProfile from "@/views/dashboard/DashboardProfile.vue";
 import DashboardCreateNewProject from "@/views/dashboard/DashboardCreateNewProject.vue";
 import Settings from "@/views/dashboard/DashboardSettings.vue";
 import DashboardEditProject from "@/views/dashboard/DashboardEditProject.vue";
+import ErrorDisplayer from "@/components/ErrorDisplayer.vue";
+import NProgress from "nprogress";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,7 +68,23 @@ const router = createRouter({
         },
       ],
     },
+    {
+      path: "/:pathMatch(.*)",
+      name: "not-found",
+      component: ErrorDisplayer,
+    },
   ],
+});
+
+router.beforeResolve((to, from, next) => {
+  if (to.name) {
+    NProgress.start();
+  }
+  next();
+});
+
+router.afterEach((to, from) => {
+  NProgress.done();
 });
 
 export default router;

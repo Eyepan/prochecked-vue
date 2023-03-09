@@ -2,6 +2,7 @@
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/appStore";
 import { storeToRefs } from "pinia";
+import { onMounted } from "vue";
 const { currentUser, isLoggedIn } = storeToRefs(useUserStore());
 defineProps<{
   error: string;

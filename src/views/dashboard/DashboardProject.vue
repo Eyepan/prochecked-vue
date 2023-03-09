@@ -447,7 +447,7 @@ async function handleDeleteTask(task_id: string) {
     </div>
 
     <!-- task list -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
       <div class="outline p-4 rounded-xl">
         <div class="text-2xl">Completed Tasks</div>
         <div
@@ -530,9 +530,7 @@ async function handleDeleteTask(task_id: string) {
           <div class="text-xs">Add one to see the task chart.</div>
         </div>
       </div>
-      <div
-        class="flex-row items-center justify-center outline p-4 rounded-xl lg:col-span-3"
-      >
+      <div class="flex-row items-center justify-center outline p-4 rounded-xl">
         <div class="text-2xl">Task Descriptions</div>
         <div class="text-lg" v-for="task in tasks">
           <div class="" v-if="task.description">

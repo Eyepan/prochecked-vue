@@ -23,9 +23,11 @@ const currentProject = ref<Project>({
 const loading = ref(false);
 const invalidProjectId = ref(false);
 const somethingWentWrong = ref(false);
+const deadlineString = ref("");
 
 onMounted(async () => {
   loading.value = true;
+  deadlineString.value = currentProject.value.deadline;
   let currentProjectId: string;
   if (typeof route.params.id === "string") {
     currentProjectId = await route.params.id;
@@ -42,11 +44,16 @@ onMounted(async () => {
   } else {
     invalidProjectId.value = true;
   }
+  deadlineString.value = currentProject.value.deadline;
   loading.value = false;
 });
 
 async function handleUpdateProject() {
   loading.value = true;
+  currentProject.value.deadline = new Date(deadlineString.value)
+    .toISOString()
+    .split("T")[0];
+  console.log(currentProject.value.deadline);
   const response = await updateProject(
     currentUser.value.user_id,
     currentProject.value
@@ -63,7 +70,7 @@ async function handleUpdateProject() {
       projects.value = p;
     }
   }
-  router.replace("/dashboard");
+  router.replace("/project/" + currentProject.value.project_id);
   loading.value = false;
 }
 </script>
@@ -79,13 +86,7 @@ async function handleUpdateProject() {
       <p>Project Description</p>
       <textarea class="p-2" rows="3" v-model="currentProject.description" />
       <p>Project Deadline:</p>
-      <input
-        id="due date"
-        type="date"
-        :min="new Date().toISOString().split('T')[0]"
-        v-model="new Date(currentProject.deadline).toISOString().split('T')[0]"
-        class="p-2"
-      />
+      <input id="due date" type="date" v-model="deadlineString" class="p-2" />
     </div>
     <div class="flex justify-center mt-5">
       <button class="btn-primary" type="submit">Update</button>
