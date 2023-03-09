@@ -362,10 +362,10 @@ async function handleDeleteTask(task_id: string) {
     <!-- title section -->
     <div class="flex flex-row items-center justify-between py-2">
       <div class="">
-        <div class="text-6xl font-black">
+        <div class="text-4xl md:text-6xl font-black">
           {{ currentProject ? currentProject.title : "Loading..." }}
         </div>
-        <div class="text-l">
+        <div class="text-md md:text-l">
           {{ currentProject ? currentProject.description : "Loading..." }}
         </div>
       </div>
