@@ -3,5 +3,6 @@ import { ref } from "vue";
 
 export const useSettingsStore = defineStore("settings", () => {
   const showGraphs = ref("true");
-  return { showGraphs };
+  const showAffirmations = ref("true");
+  return { showGraphs, showAffirmations };
 });

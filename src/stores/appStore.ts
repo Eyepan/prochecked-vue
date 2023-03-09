@@ -1,4 +1,3 @@
-import type Task from "@/models/task.model";
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
 import type User from "@/models/user.model";

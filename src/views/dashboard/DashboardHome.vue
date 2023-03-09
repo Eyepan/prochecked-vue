@@ -10,8 +10,10 @@ import ProgressBar from "@/components/ProgressBar.vue";
 import { getIncrementalAffirmation } from "@/utils/affirmations";
 import ErrorDisplayer from "@/components/ErrorDisplayer.vue";
 import { useRouter } from "vue-router";
+import { useSettingsStore } from "@/stores/settingsStore";
 
 const { projects, currentUser } = storeToRefs(useUserStore());
+const { showAffirmations } = storeToRefs(useSettingsStore());
 const tasks = ref<Task[]>([]);
 const completedTasks = ref<Task[]>([]);
 const incompleteTasks = ref<Task[]>([]);
@@ -43,8 +45,14 @@ watch(tasks, () => {
 
 <template>
   <ErrorDisplayer v-if="invalidTaskId" error="Invalid Task ID" />
-  <div class="text-5xl md:text-7xl font-black mb-5">Dashboard</div>
-  <div class="text-xl md:text-2xl lg:text-4xl">
+  <div class="text-5xl font-black">
+    Hi
+    {{ currentUser.name }}!
+  </div>
+  <div
+    v-if="showAffirmations === 'true'"
+    class="text-xl md:text-2xl lg:text-4xl"
+  >
     {{ getIncrementalAffirmation() }}
   </div>
   <div
