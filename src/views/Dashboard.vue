@@ -33,7 +33,7 @@ function signOut() {
   <div v-auto-animate class="flex flex-col transition-all h-screen">
     <div class="w-full flex-flex-row">
       <i
-        class="z-50 m-5 p-2 fa-solid fa-bars fa-xl cursor-pointer"
+        class="z-30 m-5 p-2 fa-solid fa-bars fa-xl cursor-pointer"
         @click="showSideBar = true"
       ></i>
       Pro-Checked

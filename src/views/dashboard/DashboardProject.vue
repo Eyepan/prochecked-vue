@@ -358,7 +358,7 @@ async function handleDeleteTask(task_id: string) {
       opacity: showAddTaskModal ? 0.2 : 1,
     }"
   >
-    <LoadingProgressIndicator v-if="loading" class="absolute" />
+    <LoadingProgressIndicator v-if="loading" class="absolute top-10" />
     <!-- title section -->
     <div class="flex flex-row items-center justify-between py-2">
       <div class="">
